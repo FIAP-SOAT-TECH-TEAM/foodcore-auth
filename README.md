@@ -1,5 +1,10 @@
 # ms-auth
-Serviço de identificação de usuários
+
+### Serviço de identificação de usuários
+
+Esse microserviço é utilizado para fazer a autenticação dos usuários da aplicação [food-core-api](https://github.com/FIAP-SOAT-TECH-TEAM/food-core-api) 
+
+
 
 
 ### Estrutura do projeto
@@ -18,9 +23,11 @@ Serviço de identificação de usuários
 /db                  → conexão com banco (Postgres/GORM)
 /repository          → implementações concretas (UserRepositoryImpl)
 /http                → web framework (Gin Handlers, middlewares, etc.)
+docker-compose.yml   → Arquivo docker para subir a aplicação
 go.mod
 
-
+├── Dockerfile
+├── docker-compose.yml
 ├── cmd
 │  └── server
 │    └── main.go
@@ -29,24 +36,24 @@ go.mod
 ├── go.mod
 ├── go.sum
 ├── infra
-│  ├── db
-│  └── postgres.go
-│  ├── http
-│  │  ├── error_map.go
-│  └── handler.go
-│  └── repository
-│     └── user_repository.go
+│   ├── db
+│   │   └── postgres.go
+│   ├── http
+│   │   ├── error_map.go
+│   │   └── handler.go
+│   └── repository
+│      └── user_repository.go
 └── internal
     ├── domain
     │   ├── Role.go
     │   └── User.go
     ├── dto
-    │  ├── register_user_input_dto.go
-    │  └── user_presenter.go
+    │   ├── register_user_input_dto.go
+    │   └── user_presenter.go
     ├── exceptions
-    │  └── user_exceptions.go
+    │   └── user_exceptions.go
     ├── repository
-    │  └── user_repository.go
+    │   └── user_repository.go
     ├── shared
     │   └── audit_info.go
     ├── token
