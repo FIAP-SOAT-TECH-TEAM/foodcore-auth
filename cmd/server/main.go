@@ -1,24 +1,29 @@
 package main
 
 import (
-	"github.com/FIAP-SOAT-TECH-TEAM/ms-auth/internal/http"
-	"github.com/FIAP-SOAT-TECH-TEAM/ms-auth/internal/repository"
+	"github.com/FIAP-SOAT-TECH-TEAM/ms-auth/config"
+	"github.com/FIAP-SOAT-TECH-TEAM/ms-auth/infra/db"
+	"github.com/FIAP-SOAT-TECH-TEAM/ms-auth/infra/http"
+	repoInfra "github.com/FIAP-SOAT-TECH-TEAM/ms-auth/infra/repository"
 	"github.com/FIAP-SOAT-TECH-TEAM/ms-auth/internal/usecase"
-	"github.com/FIAP-SOAT-TECH-TEAM/ms-auth/pkg/database"
-
 	"github.com/gin-gonic/gin"
+	"log"
 )
 
 func main() {
-	db := database.InitDB()
+	if err := config.LoadEnv(); err != nil {
+		log.Fatal(err)
+	}
 
-	repo := repository.NewUserRepository(db)
-	authUC := usecase.NewAuthUsecase(repo)
-	handler := http.NewAuthHandler(authUC)
+	database := db.NewPostgres()
+
+	userRepo := repoInfra.NewUserRepositoryGorm(database)
+	authUC := usecase.NewAuthUsecase(userRepo)
+	authHandler := http.NewAuthHandler(authUC)
 
 	r := gin.Default()
-	r.POST("/register", handler.Register)
-	r.POST("/login", handler.Login)
+	r.POST("/users", authHandler.Register)
+	r.POST("/users/login", authHandler.Login)
 
 	r.Run(":8080")
 }

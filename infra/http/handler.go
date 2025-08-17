@@ -1,8 +1,10 @@
 package http
 
 import (
+	"github.com/FIAP-SOAT-TECH-TEAM/ms-auth/internal/dto"
 	"github.com/FIAP-SOAT-TECH-TEAM/ms-auth/internal/usecase"
 	"github.com/gin-gonic/gin"
+	"log"
 	"net/http"
 )
 
@@ -15,24 +17,28 @@ func NewAuthHandler(auth *usecase.AuthUsecase) *AuthHandler {
 }
 
 func (h *AuthHandler) Register(c *gin.Context) {
-	var req struct {
-		Name     string `json:"name"`
-		Email    string `json:"email"`
-		Password string `json:"password"`
-		Role     string `json:"role"`
-	}
+	var req dto.RegisterUserInput
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	token, user, err := h.auth.Register(req.Name, req.Email, req.Password, req.Role)
+	token, user, err := h.auth.Register(req)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		log.Println("Erro de registro:", err)
+		status, message := MapDomainError(err)
+		c.JSON(status, gin.H{"error": message})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"user": user, "token": token})
+	userPresenter := dto.NewUserPresenter(user)
+
+	response := dto.AuthPresenter{
+		User:  userPresenter,
+		Token: token,
+	}
+
+	c.JSON(http.StatusCreated, response)
 }
 
 func (h *AuthHandler) Login(c *gin.Context) {
@@ -47,7 +53,9 @@ func (h *AuthHandler) Login(c *gin.Context) {
 
 	token, user, err := h.auth.Login(req.Email, req.Password)
 	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid credentials"})
+		log.Println("Erro de registro:", err)
+		status, message := MapDomainError(err)
+		c.JSON(status, gin.H{"error": message})
 		return
 	}
 
