@@ -1,6 +1,7 @@
 namespace Foodcore.Auth.Mapper
 {
   using Foodcore.Auth.DTO;
+  using Foodcore.Auth.Exceptions;
   using Foodcore.Auth.Model;
 
   /// <summary>
@@ -15,6 +16,9 @@ namespace Foodcore.Auth.Mapper
     /// <returns>Uma nova instância de <see cref="User"/> populada com os dados do DTO.</returns>
     public static User ToModel(UserCreateDTO dto)
     {
+      if (dto == null)
+        throw new BusinessException("Dados do usuário inválidos.");
+
       return new User
       {
         Name = dto.Name,

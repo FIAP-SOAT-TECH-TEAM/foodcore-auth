@@ -26,9 +26,6 @@ namespace Foodcore.Auth
         {
             try
             {
-                if (userCreateDTO == null)
-                    throw new BusinessException("Dados do usuário inválidos.");
-
                 var user = UserMapper.ToModel(userCreateDTO);
 
                 user.Validate();

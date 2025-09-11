@@ -4,7 +4,7 @@ VisualStudioVersion = 17.5.2.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "foodcore-auth", "foodcore-auth", "{255F4215-6108-D754-6354-898B5244F8EF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "function", "foodcore-auth\function\function.csproj", "{04A8F42B-D31A-011E-2438-CF9447768842}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "function", "function.csproj", "{04A8F42B-D31A-011E-2438-CF9447768842}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
