@@ -1,6 +1,7 @@
 using Amazon.CognitoIdentityProvider;
 using Amazon.CognitoIdentityProvider.Model;
 using Foodcore.Auth.Model;
+using Foodcore.Auth.Utils;
 
 namespace Foodcore.Auth.Services
 {
@@ -23,13 +24,27 @@ namespace Foodcore.Auth.Services
       string email,
       string cpf)
     {
+      cpf = cpf.Replace(".", "").Replace("-", "").Trim();
+
+      // O filtro pode ser feito apenas por um atributo por vez
       var listUsersRequest = new ListUsersRequest
       {
         UserPoolId = settings.UserPoolId,
-        Filter = $"email = \"{email}\" or custom:cpf = \"{cpf}\""
+        Filter = $"email = \"{email}\""
       };
-      
-      return await cognito.ListUsersAsync(listUsersRequest);
+      var listUsers = await cognito.ListUsersAsync(listUsersRequest);
+
+      if (listUsers.Users.Count == 0)
+      {
+        listUsersRequest = new ListUsersRequest
+        {
+          UserPoolId = settings.UserPoolId,
+          Filter = $"preferred_username = \"{cpf}\""
+        };
+        listUsers = await cognito.ListUsersAsync(listUsersRequest);
+      }
+
+      return listUsers;
     }
 
     /// <summary>
@@ -48,15 +63,17 @@ namespace Foodcore.Auth.Services
       {
         UserPoolId = settings.UserPoolId,
         Username = user.Username,
-        TemporaryPassword = Guid.NewGuid().ToString(),
+        TemporaryPassword = PasswordUtils.GenerateTemporaryPassword(),
         MessageAction = "SUPPRESS",
         UserAttributes =
           [
               new() { Name = "name", Value = user.Name },
               new() { Name = "email", Value = user.Email!.Value },
+              // Apenas campos nativos podem ser pesquisados, pois são indexados
+              // Escolhi este para ser armazenar o CPF, assim conseguimos pesquisar por ele
+              new() { Name = "preferred_username", Value = user.Cpf!.Value },
               new() { Name = "custom:cpf", Value = user.Cpf!.Value },
-              new() { Name = "custom:role", Value = user.GetRole().ToString()},
-              new() { Name = "custom:guest", Value = user.IsCustomer().ToString().ToLower() }
+              new() { Name = "custom:role", Value = user.GetRole().ToString()}
           ]
       };
 

@@ -37,7 +37,7 @@ namespace Foodcore.Auth
                     user.Cpf!.Value
                 );
                 if (listUsersResponse.Users.Count > 0)
-                    throw new BusinessException("Usuário com email ou CPF já existe.");
+                    throw new BusinessException("Usuário com este email ou CPF já existe.");
 
                 var password = UsuarioService.GetUserPassword(user);
 
