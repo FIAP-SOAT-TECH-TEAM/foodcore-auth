@@ -88,14 +88,11 @@ jobs:
           name_is_regexp: false
           if_no_artifact_found: fail
           path: azfuncapp
-
-      - name: Get Publish Profile
-        run: az functionapp deployment list-publishing-profiles --name ${{ needs.infra-info.outputs.azfunc_name }} --resource-group ${{ needs.infra-info.outputs.azfunc_resource_group_name }} --xml > ./azfuncapp/publishProfile.xml
-        id: get-publish-profile
-
-      - name: Deploy Azure Function
-        uses: azure/functions-action@v1
-        with:
-          app-name: ${{ needs.infra-info.outputs.azfunc_name }}
-          package: ./azfuncapp/functionapp.zip
-          publish-profile: ./azfuncapp/publishProfile.xml
+      
+      - name: Deploy Function App
+        run: |
+          az functionapp deploy \
+            --resource-group ${{ needs.infra-info.outputs.azfunc_resource_group_name }} \
+            --name ${{ needs.infra-info.outputs.azfunc_name }} \
+            --src-path ./azfuncapp/functionapp.zip \
+            --type zip
