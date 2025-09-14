@@ -30,11 +30,11 @@ var secretKey = credsDict.GetValueOrDefault("aws_secret_access_key");
 var sessionToken = credsDict.GetValueOrDefault("aws_session_token");
 
 var region = Environment.GetEnvironmentVariable("AWS_REGION");
+var appClientId = Environment.GetEnvironmentVariable("COGNITO_APP_CLIENT_ID");
 var userPoolId = Environment.GetEnvironmentVariable("COGNITO_USER_POOL_ID");
 
-if (string.IsNullOrEmpty(region) || string.IsNullOrEmpty(userPoolId))
-    throw new InvalidOperationException("Region or UserPoolId environment variable is not set.");
-
+if (string.IsNullOrEmpty(region) || string.IsNullOrEmpty(userPoolId) || string.IsNullOrEmpty(appClientId))
+    throw new InvalidOperationException("Region or UserPoolId or AppClientId environment variable is not set.");
 
 #endregion
 
@@ -49,7 +49,9 @@ builder.Services.AddSingleton<IAmazonCognitoIdentityProvider>(sp =>
 });
 builder.Services.AddSingleton(new CognitoSettings
 {
-    UserPoolId = userPoolId
+    UserPoolId = userPoolId,
+    AppClientId = appClientId,
+    Region = region
 });
 
 builder.Build().Run();

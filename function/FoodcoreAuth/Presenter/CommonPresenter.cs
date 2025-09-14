@@ -14,6 +14,8 @@ namespace Foodcore.Auth.Presenter
     /// <returns>Uma instância de <see cref="ErrorDTO"/> representando o erro.</returns>
     public static ErrorDTO ToErrorDTO(Exception ex)
     {
+      if (ex == null) throw new ArgumentException(null, nameof(ex));
+      
       return new ErrorDTO
       {
         Message = ex.Message

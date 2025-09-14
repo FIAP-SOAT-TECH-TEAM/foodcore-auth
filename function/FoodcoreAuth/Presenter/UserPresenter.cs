@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using Amazon.CognitoIdentityProvider.Model;
 using Foodcore.Auth.DTO;
 
@@ -24,6 +25,27 @@ namespace Foodcore.Auth.Presenter
             {
                 Message = "Usuário criado com sucesso!",
                 UserSub = user.User.Attributes.Find(attr => attr.Name == "sub")!.Value!
+            };
+        }
+
+        /// <summary>
+        /// Converte a resposta de obtenção de usuário do Amazon Cognito em um <see cref="UserDetailsDTO"/>.
+        /// </summary>
+        /// <param name="user">Resposta do Cognito retornada por <c>AdminGetUser</c>.</param>
+        /// <param name="claims">Coleção de claims extraídas do token JWT do usuário.</param>
+        /// <returns>Um <see cref="UserDetailsDTO"/> com os detalhes do usuário.</returns>
+        /// <exception cref="InvalidOperationException">Lançada quando <paramref name="user"/> é nulo.</exception>
+        public static UserDetailsDTO ToUserDetailsDTO(UserType user, IEnumerable<Claim> claims)
+        {
+            if (user == null) throw new ArgumentException(null, nameof(user));
+
+            return new UserDetailsDTO
+            {
+                Subject = claims.FirstOrDefault(c => c.Type == "sub")!.Value!,
+                Name = user.Attributes.Find(attr => attr.Name == "name")!.Value!,
+                Email = user.Attributes.Find(attr => attr.Name == "email")!.Value!,
+                Cpf = user.Attributes.Find(attr => attr.Name == "custom:cpf")?.Value ?? "",
+                Role = user.Attributes.Find(attr => attr.Name == "custom:role")!.Value!
             };
         }
     }
