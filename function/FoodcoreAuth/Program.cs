@@ -7,16 +7,22 @@ using Foodcore.Auth.Model;
 using Amazon.CognitoIdentityProvider;
 using Amazon;
 using DotNetEnv;
+using Microsoft.Azure.Functions.Worker.Extensions.OpenApi.Extensions;
 
-var builder = FunctionsApplication.CreateBuilder(args);
+var builder = new HostBuilder();
 
 Env.TraversePath().Load();
 
 builder.ConfigureFunctionsWebApplication();
 
-builder.Services
-    .AddApplicationInsightsTelemetryWorkerService()
-    .ConfigureFunctionsApplicationInsights();
+builder.ConfigureOpenApi();
+
+builder.ConfigureServices(services =>
+{
+    services
+        .AddApplicationInsightsTelemetryWorkerService()
+        .ConfigureFunctionsApplicationInsights();
+});
 
 # region AWS Credentials
 var rawCreds = Environment.GetEnvironmentVariable("AWS_CREDENTIALS");
@@ -36,22 +42,25 @@ var appClientId = Environment.GetEnvironmentVariable("COGNITO_APP_CLIENT_ID");
 if (string.IsNullOrEmpty(region) || string.IsNullOrEmpty(userPoolId) || string.IsNullOrEmpty(appClientId))
     throw new InvalidOperationException("Region or UserPoolId or AppClientId environment variable is not set.");
 
-#endregion
+# endregion
 
-builder.Services.AddSingleton<IAmazonCognitoIdentityProvider>(sp =>
+builder.ConfigureServices(services =>
 {
-    return new AmazonCognitoIdentityProviderClient(
-        accessKey,
-        secretKey,
-        sessionToken,
-        RegionEndpoint.GetBySystemName(region)
-    );
-});
-builder.Services.AddSingleton(new CognitoSettings
-{
-    UserPoolId = userPoolId,
-    AppClientId = appClientId,
-    Region = region
+    services.AddSingleton<IAmazonCognitoIdentityProvider>(sp =>
+    {
+        return new AmazonCognitoIdentityProviderClient(
+            accessKey,
+            secretKey,
+            sessionToken,
+            RegionEndpoint.GetBySystemName(region)
+        );
+    });
+    services.AddSingleton(new CognitoSettings
+    {
+        UserPoolId = userPoolId,
+        AppClientId = appClientId,
+        Region = region
+    });
 });
 
 builder.Build().Run();
