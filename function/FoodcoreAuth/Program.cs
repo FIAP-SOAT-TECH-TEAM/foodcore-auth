@@ -30,8 +30,8 @@ var secretKey = credsDict.GetValueOrDefault("aws_secret_access_key");
 var sessionToken = credsDict.GetValueOrDefault("aws_session_token");
 
 var region = Environment.GetEnvironmentVariable("AWS_REGION");
-var appClientId = Environment.GetEnvironmentVariable("COGNITO_APP_CLIENT_ID");
 var userPoolId = Environment.GetEnvironmentVariable("COGNITO_USER_POOL_ID");
+var appClientId = Environment.GetEnvironmentVariable("COGNITO_APP_CLIENT_ID");
 
 if (string.IsNullOrEmpty(region) || string.IsNullOrEmpty(userPoolId) || string.IsNullOrEmpty(appClientId))
     throw new InvalidOperationException("Region or UserPoolId or AppClientId environment variable is not set.");
