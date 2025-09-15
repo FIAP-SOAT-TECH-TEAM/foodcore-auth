@@ -23,7 +23,6 @@ jobs:
   infra-info:
     runs-on: ubuntu-latest
     outputs:
-      azfunc_resource_group_name: ${{ steps.rsgroup.outputs.azfunc_resource_group_name }}
       azfunc_name: ${{ steps.azfunc.outputs.azfunc_name }}
     steps:
       - name: Checkout repo
@@ -52,11 +51,6 @@ jobs:
       - name: Terraform Apply Refresh Only
         working-directory: terraform
         run: terraform apply --refresh-only --auto-approve
-
-      - name: Get Resource Group Name from remote state
-        id: rsgroup
-        working-directory: terraform
-        run: echo "azfunc_resource_group_name=$(terraform output -raw azfunc_resource_group_name_from_remote)" >> $GITHUB_OUTPUT
 
       - name: Get Function App Name from remote state
         id: azfunc
