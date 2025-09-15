@@ -8,17 +8,14 @@ using Amazon.CognitoIdentityProvider;
 using Amazon;
 using DotNetEnv;
 
-var builder = FunctionsApplication.CreateBuilder(args);
+var builder = new HostBuilder();
 
 Env.TraversePath().Load();
 
-builder.ConfigureFunctionsWebApplication();
+// https://github.com/Azure/Azure-Functions/issues/2483
+builder.ConfigureFunctionsWorkerDefaults();
 
-builder.Services
-    .AddApplicationInsightsTelemetryWorkerService()
-    .ConfigureFunctionsApplicationInsights();
-
-# region AWS Credentials
+#region AWS Credentials
 var rawCreds = Environment.GetEnvironmentVariable("AWS_CREDENTIALS");
 if (string.IsNullOrEmpty(rawCreds))
     throw new InvalidOperationException("AWS_CREDENTIALS environment variable is not set.");
@@ -38,20 +35,26 @@ if (string.IsNullOrEmpty(region) || string.IsNullOrEmpty(userPoolId) || string.I
 
 #endregion
 
-builder.Services.AddSingleton<IAmazonCognitoIdentityProvider>(sp =>
+builder.ConfigureServices(services =>
 {
-    return new AmazonCognitoIdentityProviderClient(
-        accessKey,
-        secretKey,
-        sessionToken,
-        RegionEndpoint.GetBySystemName(region)
-    );
-});
-builder.Services.AddSingleton(new CognitoSettings
-{
-    UserPoolId = userPoolId,
-    AppClientId = appClientId,
-    Region = region
+    services.AddApplicationInsightsTelemetryWorkerService()
+            .ConfigureFunctionsApplicationInsights();
+
+    services.AddSingleton<IAmazonCognitoIdentityProvider>(sp =>
+    {
+        return new AmazonCognitoIdentityProviderClient(
+            accessKey,
+            secretKey,
+            sessionToken,
+            RegionEndpoint.GetBySystemName(region)
+        );
+    });
+    services.AddSingleton(new CognitoSettings
+    {
+        UserPoolId = userPoolId,
+        AppClientId = appClientId,
+        Region = region
+    });
 });
 
 builder.Build().Run();
