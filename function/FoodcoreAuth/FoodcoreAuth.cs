@@ -84,6 +84,7 @@ namespace Foodcore.Auth
         }
 
         [Function("ValidateToken")]
+        [OpenApiIgnore]
         [OpenApiOperation(operationId: "ValidateToken", tags: new[] { "Auth" })]
         [OpenApiParameter(name: "access_token", In = ParameterLocation.Query, Required = true, Type = typeof(string), Description = "Token JWT de acesso")]
         [OpenApiResponseWithBody(statusCode: System.Net.HttpStatusCode.OK, contentType: "application/json", bodyType: typeof(UserDetailsDTO), Description = "Token validado com sucesso")]
