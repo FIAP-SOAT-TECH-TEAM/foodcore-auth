@@ -29,10 +29,7 @@ jobs:
           dotnet-version: '9.0.x'
       
       - name: Setup Azure Functions Core Tools
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y curl unzip
-          npm install -g azure-functions-core-tools@4 --unsafe-perm true
+        run: npm install -g azure-functions-core-tools@4 --unsafe-perm true
 
       - name: Dependencies Restore
         run: dotnet restore
