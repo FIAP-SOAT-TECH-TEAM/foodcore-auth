@@ -8,7 +8,7 @@ output "azfunc_name_from_remote" {
   description = "O nome da Azure Function App do backend do FoodCore"
 }
 
-output "auth_api_backend" {
-  value = module.apim.auth_api_backend
-  description = "A URL do backend da API de autenticação"
+output "auth_api_validate_endpoint" {
+  value = module.apim.auth_api_validate_endpoint
+  description = "A URL do endpoint de validação da API de autenticação"
 }
