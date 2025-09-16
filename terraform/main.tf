@@ -8,7 +8,7 @@ module "apim" {
   foodcore-backend-storage-account  = var.foodcore-backend-storage-account
   apim_api_auth_name                = var.apim_api_auth_name
   apim_api_auth_version             = var.apim_api_auth_version
-  auth_api_path                     = var.auth_api_path
+  auth_api_path                     = local.auth_api_path_without_slash
   apim_api_auth_display_name        = var.apim_api_auth_display_name
 
 }
