@@ -61,9 +61,14 @@ jobs:
           
           DEFAULT_CUSTOMER_PASSWORD=EXAMPLE
           EOF
-
           export FUNCTIONS_WORKER_RUNTIME=dotnet-isolated
-          func start --port 7025 & sleep 10
+
+          func start --port 7025 &
+          until curl -s http://localhost:7025/api/openapi/v3.json > /dev/null; do
+            echo "Aguardando a function iniciar..."
+            sleep 5
+          done
+
           curl -o openapi.json http://localhost:7025/api/openapi/v3.json
           
       - name: Upload Function App Artifact
