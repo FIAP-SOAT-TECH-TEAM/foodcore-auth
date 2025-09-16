@@ -30,11 +30,9 @@ jobs:
       
       - name: Setup Azure Functions Core Tools
         run: |
-          curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > microsoft.gpg
-          sudo mv microsoft.gpg /etc/apt/trusted.gpg.d/microsoft.gpg
-          sudo sh -c 'echo "deb [arch=amd64] https://packages.microsoft.com/repos/microsoft-ubuntu-$(lsb_release -cs 2>/dev/null)-prod $(lsb_release -cs 2>/dev/null) main" > /etc/apt/sources.list.d/dotnetdev.list'
           sudo apt-get update
-          sudo apt-get install azure-functions-core-tools-4
+          sudo apt-get install -y curl unzip
+          npm install -g azure-functions-core-tools@4 --unsafe-perm true
 
       - name: Dependencies Restore
         run: dotnet restore
@@ -73,7 +71,7 @@ jobs:
           EOF 
       
       - name: Start Function App
-        run: func start --port 7025 & leep 10
+        run: func start --port 7025 & sleep 10
         
       - name: Download openapi.json
         run: curl -o openapi.json http://localhost:7025/api/openapi/v3.json
