@@ -27,6 +27,9 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '9.0.x'
+      
+      - name: Setup Azure Functions Core Tools
+        run: curl -sL https://aka.ms/InstallAzureFunctionsCoreTools | sudo bash
 
       - name: Dependencies Restore
         run: dotnet restore
@@ -47,3 +50,31 @@ jobs:
         with:
           name: functionapp-zip
           path: ./function/FoodcoreAuth/functionapp.zip
+      
+      - name: Create .env file for Function App
+        run: |
+          cat <<EOF > .env
+          AWS_CREDENTIALS="[default]
+          aws_access_key_id=EXAMPLE
+          aws_secret_access_key=EXAMPLE
+          aws_session_token=EXAMPLE"
+          
+          AWS_REGION=EXAMPLE
+          
+          COGNITO_USER_POOL_ID=EXAMPLE
+          COGNITO_APP_CLIENT_ID=EXAMPLE
+          
+          DEFAULT_CUSTOMER_PASSWORD=EXAMPLE
+          EOF 
+      
+      - name: Start Function App
+        run: func start --port 7025 & leep 10
+        
+      - name: Download openapi.json
+        run: curl -o openapi.json http://localhost:7025/api/openapi/v3.json
+
+      - name: Upload openapi.json artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: openapi-json
+          path: ./function/FoodcoreAuth/openapi.json
