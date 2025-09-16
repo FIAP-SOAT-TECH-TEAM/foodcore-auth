@@ -7,7 +7,7 @@ namespace Foodcore.Auth.Config
 {
   public class AuthResponseDTOExample : OpenApiExample<AuthResponseDTO>
   {
-    public override IOpenApiExample<AuthResponseDTO> Build(NamingStrategy namingStrategy = null)
+    public override IOpenApiExample<AuthResponseDTO> Build(NamingStrategy namingStrategy)
     {
       Examples.Add(
           OpenApiExampleResolver.Resolve(
@@ -30,7 +30,7 @@ namespace Foodcore.Auth.Config
 
   public class CustomerAuthDTOExample : OpenApiExample<CustomerAuthDTO>
   {
-    public override IOpenApiExample<CustomerAuthDTO> Build(NamingStrategy namingStrategy = null)
+    public override IOpenApiExample<CustomerAuthDTO> Build(NamingStrategy namingStrategy)
     {
       Examples.Add(
           OpenApiExampleResolver.Resolve(
@@ -50,7 +50,7 @@ namespace Foodcore.Auth.Config
 
   public class ErrorDTOExample : OpenApiExample<ErrorDTO>
   {
-    public override IOpenApiExample<ErrorDTO> Build(NamingStrategy namingStrategy = null)
+    public override IOpenApiExample<ErrorDTO> Build(NamingStrategy namingStrategy)
     {
       Examples.Add(
           OpenApiExampleResolver.Resolve(
@@ -70,7 +70,7 @@ namespace Foodcore.Auth.Config
 
   public class UserCreatedResponseDTOExample : OpenApiExample<UserCreatedResponseDTO>
   {
-    public override IOpenApiExample<UserCreatedResponseDTO> Build(NamingStrategy namingStrategy = null)
+    public override IOpenApiExample<UserCreatedResponseDTO> Build(NamingStrategy namingStrategy)
     {
       Examples.Add(
           OpenApiExampleResolver.Resolve(
@@ -90,7 +90,7 @@ namespace Foodcore.Auth.Config
 
   public class UserCreateDTOExample : OpenApiExample<UserCreateDTO>
   {
-    public override IOpenApiExample<UserCreateDTO> Build(NamingStrategy namingStrategy = null)
+    public override IOpenApiExample<UserCreateDTO> Build(NamingStrategy namingStrategy)
     {
       Examples.Add(
           OpenApiExampleResolver.Resolve(
@@ -112,7 +112,7 @@ namespace Foodcore.Auth.Config
 
   public class UserDetailsDTOExample : OpenApiExample<UserDetailsDTO>
   {
-    public override IOpenApiExample<UserDetailsDTO> Build(NamingStrategy namingStrategy = null)
+    public override IOpenApiExample<UserDetailsDTO> Build(NamingStrategy namingStrategy)
     {
       Examples.Add(
           OpenApiExampleResolver.Resolve(
