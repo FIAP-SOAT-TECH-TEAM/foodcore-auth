@@ -44,12 +44,6 @@ jobs:
         run: |
           cd publish
           zip -r ../functionapp.zip .
-          
-      - name: Upload artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: functionapp-zip
-          path: ./function/FoodcoreAuth/functionapp.zip
       
       - name: Create .env file for Function App
         run: |
@@ -65,15 +59,23 @@ jobs:
           COGNITO_APP_CLIENT_ID=EXAMPLE
           
           DEFAULT_CUSTOMER_PASSWORD=EXAMPLE
-          EOF 
-      
+          EOF
+
       - name: Start Function App
-        run: func start --port 7025 & sleep 10
+        run: |
+          export FUNCTIONS_WORKER_RUNTIME=dotnet-isolated
+          func start --port 7025 & sleep 10
         
       - name: Download openapi.json
         run: curl -o openapi.json http://localhost:7025/api/openapi/v3.json
-
-      - name: Upload openapi.json artifact
+          
+      - name: Upload Function App Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: functionapp-zip
+          path: ./function/FoodcoreAuth/functionapp.zip
+      
+      - name: Upload openapi.json Artifact
         uses: actions/upload-artifact@v4
         with:
           name: openapi-json
