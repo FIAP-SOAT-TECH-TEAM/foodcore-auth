@@ -18,6 +18,7 @@ jobs:
       TF_VAR_foodcore-backend-storage-account: ${{secrets.BACKEND_AZURE_STORAGE_ACCOUNT_NAME}}
       TF_VAR_foodcore-backend-container: ${{secrets.BACKEND_AZURE_STORAGE_ACCOUNT_CONTAINER_NAME}}
       TF_VAR_foodcore-backend-infra-key: ${{secrets.FOODCORE_INFRA_BACKEND_AZURE_KEY}}
+      TF_VAR_swagger_path: "./openapi/openapi.json"
 
     defaults:
       run:

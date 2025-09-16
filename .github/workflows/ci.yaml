@@ -16,6 +16,7 @@ defaults:
     working-directory: ./function/FoodcoreAuth
 
 jobs:
+
   build:
     runs-on: ubuntu-latest
 
@@ -44,8 +45,8 @@ jobs:
         run: |
           cd publish
           zip -r ../functionapp.zip .
-      
-      - name: Create .env file for Function App
+
+      - name: Generate OpenApi File
         run: |
           cat <<EOF > .env
           AWS_CREDENTIALS="[default]
@@ -61,13 +62,9 @@ jobs:
           DEFAULT_CUSTOMER_PASSWORD=EXAMPLE
           EOF
 
-      - name: Start Function App
-        run: |
           export FUNCTIONS_WORKER_RUNTIME=dotnet-isolated
           func start --port 7025 & sleep 10
-        
-      - name: Download openapi.json
-        run: curl -o openapi.json http://localhost:7025/api/openapi/v3.json
+          curl -o openapi.json http://localhost:7025/api/openapi/v3.json
           
       - name: Upload Function App Artifact
         uses: actions/upload-artifact@v4
@@ -75,8 +72,68 @@ jobs:
           name: functionapp-zip
           path: ./function/FoodcoreAuth/functionapp.zip
       
-      - name: Upload openapi.json Artifact
+      - name: Upload OpenApi File Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: openapi-json
+          name: openapi
           path: ./function/FoodcoreAuth/openapi.json
+
+  terraform:
+    runs-on: ubuntu-latest
+    needs: [build]
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      TF_VAR_subscription_id: ${{secrets.AZURE_SUBSCRIPTION_ID}}
+      TF_VAR_foodcore-backend-resource-group: ${{secrets.BACKEND_AZURE_RESOURCE_GROUP_NAME}}
+      TF_VAR_foodcore-backend-storage-account: ${{secrets.BACKEND_AZURE_STORAGE_ACCOUNT_NAME}}
+      TF_VAR_foodcore-backend-container: ${{secrets.BACKEND_AZURE_STORAGE_ACCOUNT_CONTAINER_NAME}}
+      TF_VAR_foodcore-backend-infra-key: ${{secrets.FOODCORE_INFRA_BACKEND_AZURE_KEY}}
+      TF_VAR_swagger_path: "./openapi/openapi.json"
+
+    defaults:
+      run:
+        working-directory: terraform
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Login Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+
+      - name: Download artifacts - OpenApi File
+        uses: actions/download-artifact@v4
+        with:
+          name: openapi
+          path: ./terraform/openapi
+
+      - name: Terraform Fmt
+        id: fmt
+        run: terraform fmt
+
+      - name: Terraform Init
+        run: |
+          terraform init \
+            -backend-config="resource_group_name=${{secrets.BACKEND_AZURE_RESOURCE_GROUP_NAME}}" \
+            -backend-config="storage_account_name=${{secrets.BACKEND_AZURE_STORAGE_ACCOUNT_NAME}}" \
+            -backend-config="container_name=${{secrets.BACKEND_AZURE_STORAGE_ACCOUNT_CONTAINER_NAME}}" \
+            -backend-config="key=${{secrets.BACKEND_AZURE_KEY}}"
+
+      - name: Terraform Validate
+        id: validate
+        run: terraform validate -no-color
+
+      - name: Terraform Plan
+        id: plan
+        run: terraform plan -out=tfplan
+
+      - name: Upload Terraform Plan
+        uses: actions/upload-artifact@v4
+        with:
+          name: tfplan
+          path: terraform/tfplan

@@ -24,3 +24,34 @@
     type        = string
     description = "Chave do arquivo tfstate do foodcore-infra"
   }
+
+# APIM
+
+  variable "swagger_path" {
+    description = "Caminho do arquivo swagger.json"
+    type        = string
+  }
+
+  variable "apim_api_auth_name" {
+    description = "Nome da API de autenticação no API Management"
+    type        = string
+    default     = "foodcore-auth-api"
+  }
+
+  variable "apim_api_auth_version" {
+    description = "Versão da API de autenticação no API Management"
+    type        = string
+    default     = "1"
+  }
+
+  variable "apim_api_auth_display_name" {
+    description = "Nome exibido da API de autenticação no API Management"
+    type        = string
+    default     = "Foodcore Auth API"
+  }
+
+  variable "auth_api_path" {
+    type        = string
+    description = "Caminho da API de autenticação."
+    default     = "/auth"
+  }
