@@ -123,7 +123,8 @@ namespace Foodcore.Auth.Config
                 Name = "João da Silva",
                 Email = "joao.silva@exemplo.com",
                 Cpf = "12345678901",
-                Role = "CUSTOMER"
+                Role = "CUSTOMER",
+                CreatedAt = DateTime.UtcNow
               },
               namingStrategy
           )
