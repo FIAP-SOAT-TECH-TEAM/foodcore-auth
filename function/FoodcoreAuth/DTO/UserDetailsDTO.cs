@@ -38,5 +38,11 @@ namespace Foodcore.Auth.DTO
     /// </summary>
     [OpenApiProperty(Description = "Papel (role) do usuário.")]
     public required string Role { get; set; }
+
+    /// <summary>
+    /// Data de criação do usuário.
+    /// </summary>
+    [OpenApiProperty(Description = "Data de criação do usuário.")]
+    public required DateTime CreatedAt { get; set; }
   }
 }

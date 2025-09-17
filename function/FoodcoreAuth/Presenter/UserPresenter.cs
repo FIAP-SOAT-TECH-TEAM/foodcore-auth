@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using Amazon.CognitoIdentityProvider.Model;
 using Foodcore.Auth.DTO;
+using Foodcore.Auth.Exceptions;
 
 namespace Foodcore.Auth.Presenter
 {
@@ -38,6 +39,9 @@ namespace Foodcore.Auth.Presenter
         public static UserDetailsDTO ToUserDetailsDTO(UserType user, IEnumerable<Claim> claims)
         {
             if (user == null) throw new ArgumentException(null, nameof(user));
+            
+            if (user.UserCreateDate == null)
+                throw new BusinessException("A data de criação do usuário não pode ser nula.");
 
             return new UserDetailsDTO
             {
@@ -45,7 +49,8 @@ namespace Foodcore.Auth.Presenter
                 Name = user.Attributes.Find(attr => attr.Name == "name")!.Value!,
                 Email = user.Attributes.Find(attr => attr.Name == "email")!.Value!,
                 Cpf = user.Attributes.Find(attr => attr.Name == "custom:cpf")?.Value ?? "",
-                Role = user.Attributes.Find(attr => attr.Name == "custom:role")!.Value!
+                Role = user.Attributes.Find(attr => attr.Name == "custom:role")!.Value!,
+                CreatedAt = (DateTime)user.UserCreateDate
             };
         }
     }
