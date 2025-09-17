@@ -11,15 +11,61 @@ permissions:
   contents: read
   actions: read
 
+env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  TF_VAR_subscription_id: ${{secrets.AZURE_SUBSCRIPTION_ID}}
+  TF_VAR_foodcore-backend-resource-group: ${{secrets.BACKEND_AZURE_RESOURCE_GROUP_NAME}}
+  TF_VAR_foodcore-backend-storage-account: ${{secrets.BACKEND_AZURE_STORAGE_ACCOUNT_NAME}}
+  TF_VAR_foodcore-backend-container: ${{secrets.BACKEND_AZURE_STORAGE_ACCOUNT_CONTAINER_NAME}}
+  TF_VAR_foodcore-backend-infra-key: ${{secrets.FOODCORE_INFRA_BACKEND_AZURE_KEY}}
+  TF_VAR_swagger_path: "./openapi/openapi.json"
+
 defaults:
   run:
     working-directory: ./function/FoodcoreAuth
 
 jobs:
 
+  infra-info:
+    runs-on: ubuntu-latest
+    outputs:
+      azfunc_name: ${{ steps.azfunc.outputs.azfunc_name }}
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Login Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_wrapper: false
+
+      - name: Terraform Init
+        working-directory: terraform
+        run: |
+          terraform init \
+            -backend-config="resource_group_name=${{secrets.BACKEND_AZURE_RESOURCE_GROUP_NAME}}" \
+            -backend-config="storage_account_name=${{secrets.BACKEND_AZURE_STORAGE_ACCOUNT_NAME}}" \
+            -backend-config="container_name=${{secrets.BACKEND_AZURE_STORAGE_ACCOUNT_CONTAINER_NAME}}" \
+            -backend-config="key=${{secrets.BACKEND_AZURE_KEY}}"
+
+      # Somente para que o output seja criado
+      - name: Terraform Apply Refresh Only
+        working-directory: terraform
+        run: terraform apply --refresh-only --auto-approve
+
+      - name: Get Function App Name from remote state
+        id: azfunc
+        working-directory: terraform
+        run: echo "azfunc_name=$(terraform output -raw azfunc_name_from_remote)" >> $GITHUB_OUTPUT
+
   build:
     runs-on: ubuntu-latest
-
+    needs: infra-info
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
@@ -85,15 +131,7 @@ jobs:
 
   terraform:
     runs-on: ubuntu-latest
-    needs: [build]
-    env:
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      TF_VAR_subscription_id: ${{secrets.AZURE_SUBSCRIPTION_ID}}
-      TF_VAR_foodcore-backend-resource-group: ${{secrets.BACKEND_AZURE_RESOURCE_GROUP_NAME}}
-      TF_VAR_foodcore-backend-storage-account: ${{secrets.BACKEND_AZURE_STORAGE_ACCOUNT_NAME}}
-      TF_VAR_foodcore-backend-container: ${{secrets.BACKEND_AZURE_STORAGE_ACCOUNT_CONTAINER_NAME}}
-      TF_VAR_foodcore-backend-infra-key: ${{secrets.FOODCORE_INFRA_BACKEND_AZURE_KEY}}
-      TF_VAR_swagger_path: "./openapi/openapi.json"
+    needs: build
 
     defaults:
       run:
