@@ -91,7 +91,7 @@ namespace Foodcore.Auth
         [OpenApiResponseWithBody(statusCode: System.Net.HttpStatusCode.Unauthorized, contentType: "application/json", bodyType: typeof(ErrorDTO), Description = "Token inválido ou usuário não autorizado")]
         [OpenApiResponseWithBody(statusCode: System.Net.HttpStatusCode.InternalServerError, contentType: "application/json", bodyType: typeof(ErrorDTO), Description = "Erro interno")]
         public async Task<IActionResult> ValidateToken(
-        [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "auth/validate")]
+        [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "validate")]
         HttpRequestData httpRequestData)
         {
             try
@@ -145,7 +145,7 @@ namespace Foodcore.Auth
         [OpenApiResponseWithBody(statusCode: System.Net.HttpStatusCode.Unauthorized, contentType: "application/json", bodyType: typeof(ErrorDTO), Description = "Usuário não autorizado")]
         [OpenApiResponseWithBody(statusCode: System.Net.HttpStatusCode.InternalServerError, contentType: "application/json", bodyType: typeof(ErrorDTO), Description = "Erro interno")]
         public async Task<IActionResult> AuthCustomer(
-        [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "auth/customer/login")]
+        [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "customer/login")]
         [MsAzureFuncWorker.FromBody] CustomerAuthDTO customerAuthDTO)
         {
             try
