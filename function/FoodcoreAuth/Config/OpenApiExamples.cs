@@ -1,4 +1,5 @@
 using Foodcore.Auth.DTO;
+using Foodcore.Auth.Model;
 using Microsoft.Azure.WebJobs.Extensions.OpenApi.Core.Abstractions;
 using Microsoft.Azure.WebJobs.Extensions.OpenApi.Core.Resolvers;
 using Newtonsoft.Json.Serialization;
@@ -123,7 +124,7 @@ namespace Foodcore.Auth.Config
                 Name = "João da Silva",
                 Email = "joao.silva@exemplo.com",
                 Cpf = "12345678901",
-                Role = "CUSTOMER",
+                Role = Role.CUSTOMER.ToString(),
                 CreatedAt = DateTime.UtcNow
               },
               namingStrategy
