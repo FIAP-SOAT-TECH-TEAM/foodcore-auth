@@ -1,3 +1,6 @@
+using System.Text.RegularExpressions;
+using Amazon.CognitoIdentityProvider.Model;
+using Foodcore.Auth.Helpers;
 using Foodcore.Auth.Model;
 
 namespace Foodcore.Auth.Services
@@ -23,6 +26,42 @@ namespace Foodcore.Auth.Services
             }
 
             return user.Password!.Value;
+        }
+        /// <summary>
+        /// Verifica se o usuário com a função especificada pode acessar a URL dada com o método HTTP fornecido.
+        /// </summary>
+        /// <param name="url">URL que o usuário está tentando acessar.</param>
+        /// <param name="userRole">Função do usuário (Role).</param>
+        /// <param name="httpMethod">Método HTTP da solicitação.</param>
+        /// <exception cref="NotAuthorizedException">Lançada quando o usuário não tem permissão para acessar a URL, ou quando a URL não é fornecida.</exception>
+        /// <returns></returns>
+        public static void UserCanAccessUrl(string url, Role userRole, string httpMethod)
+        {
+            // Implicit Deny
+            var canAccess = false;
+
+            if (string.IsNullOrWhiteSpace(url))
+                throw new NotAuthorizedException("URL não fornecida.");
+
+            httpMethod = httpMethod.ToUpperInvariant();
+            var authorizationRules = AuthorizationHelper.Rules;
+
+            foreach (var rule in authorizationRules)
+            {
+                if (rule.HttpMethod != "*" && rule.HttpMethod != httpMethod)
+                    continue;
+
+                if (!Regex.IsMatch(url, rule.Pattern))
+                    continue;
+
+                if (rule.AllowedRoles == null)
+                    return;
+                
+                canAccess = rule.AllowedRoles.Contains(userRole.ToString());
+            }
+            
+            if (!canAccess)
+                throw new NotAuthorizedException($"Usuário não tem permissão para acessar este recurso: {url}.");
         }
     }
 }

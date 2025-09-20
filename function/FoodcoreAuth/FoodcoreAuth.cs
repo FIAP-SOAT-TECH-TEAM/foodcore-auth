@@ -97,21 +97,25 @@ namespace Foodcore.Auth
             try
             {
                 var accessToken = httpRequestData.Query["access_token"];
-
                 if (string.IsNullOrWhiteSpace(accessToken))
                     throw new SecurityTokenException("Access token não fornecido.");
 
+                var url = httpRequestData.Query["url"];
+                if (string.IsNullOrWhiteSpace(url))
+                    throw new NotAuthorizedException("URL não fornecida.");
+
                 var jwtToken = await CognitoService.ValidateToken(_settings, accessToken);
-
                 var jwtTokenSubject = jwtToken.Claims.FirstOrDefault(c => c.Type == "sub")?.Value;
-
                 if (string.IsNullOrWhiteSpace(jwtTokenSubject))
                     throw new SecurityTokenException("Token inválido: 'sub' claim não encontrado.");
 
                 var user = await CognitoService.GetUserBySubAsync(_cognito, _settings, jwtTokenSubject) ?? throw new NotAuthorizedException("Usuário não encontrado.");
+                var userRole = user.Attributes.Find(attr => attr.Name == "custom:role")!.Value!;
+                if (string.IsNullOrWhiteSpace(userRole) || !Enum.TryParse<Role>(userRole, out var role))
+                    throw new NotAuthorizedException("Role não encontrada ou inválida.");
+                UsuarioService.UserCanAccessUrl(url, role, httpRequestData.Method);
 
                 var response = UserPresenter.ToUserDetailsDTO(user, jwtToken.Claims);
-
                 return new OkObjectResult(response);
             }
             catch (SecurityTokenException ex)
@@ -160,7 +164,7 @@ namespace Foodcore.Auth
                     customerAuthDTO.Cpf
                 ) ?? throw new BusinessException("Usuário com este email ou CPF não existe.");
 
-                var userIsCustomer = existingUser.Attributes.Any(attr => attr.Name == "custom:role" && attr.Value == "CUSTOMER");
+                var userIsCustomer = existingUser.Attributes.Any(attr => attr.Name == "custom:role" && attr.Value == Role.CUSTOMER.ToString());
 
                 if (!userIsCustomer)
                     throw new BusinessException("Usuário não é um cliente.");
