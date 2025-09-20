@@ -24,7 +24,7 @@ builder.ConfigureServices(services =>
         .ConfigureFunctionsApplicationInsights();
 });
 
-# region AWS Credentials
+# region AWS
 var rawCreds = Environment.GetEnvironmentVariable("AWS_CREDENTIALS");
 if (string.IsNullOrEmpty(rawCreds))
     throw new InvalidOperationException("AWS_CREDENTIALS environment variable is not set.");
@@ -35,14 +35,19 @@ var accessKey = credsDict.GetValueOrDefault("aws_access_key_id");
 var secretKey = credsDict.GetValueOrDefault("aws_secret_access_key");
 var sessionToken = credsDict.GetValueOrDefault("aws_session_token");
 
+var guestUserEmail = Environment.GetEnvironmentVariable("GUEST_USER_EMAIL");
+
+if (string.IsNullOrEmpty(guestUserEmail))
+    throw new InvalidOperationException("GuestUserEmail environment variable is not set.");
+
 var region = Environment.GetEnvironmentVariable("AWS_REGION");
 var userPoolId = Environment.GetEnvironmentVariable("COGNITO_USER_POOL_ID");
 var appClientId = Environment.GetEnvironmentVariable("COGNITO_APP_CLIENT_ID");
 
 if (string.IsNullOrEmpty(region) || string.IsNullOrEmpty(userPoolId) || string.IsNullOrEmpty(appClientId))
     throw new InvalidOperationException("Region or UserPoolId or AppClientId environment variable is not set.");
-
-# endregion
+    
+#endregion
 
 builder.ConfigureServices(services =>
 {
@@ -59,7 +64,8 @@ builder.ConfigureServices(services =>
     {
         UserPoolId = userPoolId,
         AppClientId = appClientId,
-        Region = region
+        Region = region,
+        GuestUserEmail = guestUserEmail
     });
 });
 

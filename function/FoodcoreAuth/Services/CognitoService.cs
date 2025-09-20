@@ -23,8 +23,8 @@ namespace Foodcore.Auth.Services
     public static async Task<UserType?> GetUserByEmailOrCpfAsync(
       IAmazonCognitoIdentityProvider cognito,
       CognitoSettings settings,
-      string email,
-      string cpf)
+      string email = "",
+      string cpf = "")
     {
       cpf = cpf.Replace(".", "").Replace("-", "").Trim();
       cpf = string.IsNullOrEmpty(cpf) ? "none" : cpf;

@@ -19,5 +19,10 @@ namespace Foodcore.Auth.Model
     /// Região onde o Cognito está configurado (ex: us-east-1).
     /// </summary>
     public required string Region { get; set; }
+
+    /// <summary>
+    /// E-mail do usuário convidado (guest user) utilizado para operações que não requerem autenticação.
+    /// </summary>
+    public required string GuestUserEmail { get; set; }
   }
 }

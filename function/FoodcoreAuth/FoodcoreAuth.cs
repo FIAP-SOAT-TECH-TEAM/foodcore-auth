@@ -154,23 +154,34 @@ namespace Foodcore.Auth
         {
             try
             {
-                if (string.IsNullOrWhiteSpace(customerAuthDTO.Email) && string.IsNullOrWhiteSpace(customerAuthDTO.Cpf))
-                    throw new BusinessException("Email ou CPF devem ser fornecidos.");
+                UserType? existingUser = null;
 
-                var existingUser = await CognitoService.GetUserByEmailOrCpfAsync(
-                    _cognito,
-                    _settings,
-                    customerAuthDTO.Email,
-                    customerAuthDTO.Cpf
-                ) ?? throw new BusinessException("Usuário com este email ou CPF não existe.");
+                var isGuestAuthentication = string.IsNullOrWhiteSpace(customerAuthDTO.Email) && string.IsNullOrWhiteSpace(customerAuthDTO.Cpf);
+
+                if (isGuestAuthentication)
+                {
+                    existingUser = await CognitoService.GetUserByEmailOrCpfAsync(
+                        _cognito,
+                        _settings,
+                        _settings.GuestUserEmail
+                    ) ?? throw new BusinessException("Usuário convidado não encontrado.");
+                }
+                else
+                {
+                    existingUser = await CognitoService.GetUserByEmailOrCpfAsync(
+                        _cognito,
+                        _settings,
+                        customerAuthDTO.Email,
+                        customerAuthDTO.Cpf
+                    ) ?? throw new BusinessException("Usuário com este email ou CPF não existe.");
+                }
 
                 var userIsCustomer = existingUser.Attributes.Any(attr => attr.Name == "custom:role" && attr.Value == Role.CUSTOMER.ToString());
-
                 if (!userIsCustomer)
                     throw new BusinessException("Usuário não é um cliente.");
 
                 var password = Environment.GetEnvironmentVariable("DEFAULT_CUSTOMER_PASSWORD") ?? throw new InvalidOperationException("Default customer password not set.");
-
+                
                 var token = await CognitoService.AuthenticateUserAsync(
                     _cognito,
                     _settings,
