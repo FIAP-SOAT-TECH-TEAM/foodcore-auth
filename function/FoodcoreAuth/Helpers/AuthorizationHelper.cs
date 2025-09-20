@@ -34,6 +34,7 @@ namespace Foodcore.Auth.Helpers
             #region Payment Endpoints
             new SecurityRules { HttpMethod = "GET", Pattern = @"^/payments/[^/]+/qrCode$", AllowedRoles = [Role.ADMIN.ToString(), Role.CUSTOMER.ToString()] },
             new SecurityRules { HttpMethod = "GET", Pattern = @"^/payments/[^/]+/status$", AllowedRoles = [Role.ADMIN.ToString(), Role.CUSTOMER.ToString()] },
+            new SecurityRules { HttpMethod = "GET", Pattern = @"^/payments/merchant_orders/[^/]+$", AllowedRoles = [Role.ADMIN.ToString()] },
             #endregion
         ];
     }
