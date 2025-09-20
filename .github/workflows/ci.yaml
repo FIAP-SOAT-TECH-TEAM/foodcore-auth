@@ -106,15 +106,22 @@ jobs:
           COGNITO_APP_CLIENT_ID=EXAMPLE
           
           DEFAULT_CUSTOMER_PASSWORD=EXAMPLE
+          GUEST_USER_EMAIL=EXAMPLE
           EOF
           export FUNCTIONS_WORKER_RUNTIME=dotnet-isolated
 
-          func start --port 7025 &
+          func start --port 7025 & max_retries=12 count=0
           until curl -s http://localhost:7025/api/openapi/v3.json > /dev/null; do
-            echo "Aguardando a function iniciar..."
+            count=$((count+1))
+            if [ $count -ge $max_retries ]; then
+              echo "Function não respondeu após: $((max_retries*5)) segundos ❌"
+              exit 1
+            fi
+            echo "Aguardando a function iniciar...⌚ ($count/$max_retries)"
             sleep 5
           done
 
+          echo "Function está no ar 🚀, gerando OpenApi..."
           curl -o openapi.json http://localhost:7025/api/openapi/v3.json
           
       - name: Upload Function App Artifact
