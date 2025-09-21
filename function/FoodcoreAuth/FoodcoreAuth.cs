@@ -97,8 +97,6 @@ namespace Foodcore.Auth
             try
             {
                 var accessToken = httpRequestData.Query["access_token"];
-                if (string.IsNullOrWhiteSpace(accessToken))
-                    throw new SecurityTokenException("Access token não fornecido.");
 
                 var url = httpRequestData.Query["url"];
                 if (string.IsNullOrWhiteSpace(url))
@@ -109,6 +107,14 @@ namespace Foodcore.Auth
                     throw new NotAuthorizedException("HTTP method não fornecido.");
                 httpMethod = httpMethod.ToUpperInvariant();
 
+                if (string.IsNullOrWhiteSpace(accessToken))
+                {
+                    UsuarioService.UserCanAccessUrl(url, httpMethod);
+                    
+                    var emptyResponse = UserPresenter.ToUserDetailsDTO();
+                    return new OkObjectResult(emptyResponse);
+                }
+                    
                 var jwtToken = await CognitoService.ValidateToken(_settings, accessToken);
                 var jwtTokenSubject = jwtToken.Claims.FirstOrDefault(c => c.Type == "sub")?.Value;
                 if (string.IsNullOrWhiteSpace(jwtTokenSubject))
@@ -118,7 +124,7 @@ namespace Foodcore.Auth
                 var userRole = user.Attributes.Find(attr => attr.Name == "custom:role")!.Value!;
                 if (string.IsNullOrWhiteSpace(userRole) || !Enum.TryParse<Role>(userRole, out var role))
                     throw new NotAuthorizedException("Role não encontrada ou inválida.");
-                UsuarioService.UserCanAccessUrl(url, role, httpMethod);
+                UsuarioService.UserCanAccessUrl(url, httpMethod, role);
 
                 var response = UserPresenter.ToUserDetailsDTO(user, jwtToken.Claims);
                 return new OkObjectResult(response);
