@@ -36,7 +36,7 @@ namespace Foodcore.Auth.Presenter
         /// <param name="claims">Coleção de claims extraídas do token JWT do usuário.</param>
         /// <returns>Um <see cref="UserDetailsDTO"/> com os detalhes do usuário.</returns>
         /// <exception cref="InvalidOperationException">Lançada quando <paramref name="user"/> é nulo.</exception>
-        public static UserDetailsDTO ToUserDetailsDTO(UserType user, IEnumerable<Claim> claims)
+        public static UserDetailsDTO ToUserDetailsDTO(UserType? user = null, IEnumerable<Claim>? claims = null)
         {
             if (user == null) throw new ArgumentException(null, nameof(user));
             
@@ -45,12 +45,12 @@ namespace Foodcore.Auth.Presenter
 
             return new UserDetailsDTO
             {
-                Subject = claims.FirstOrDefault(c => c.Type == "sub")!.Value!,
-                Name = user.Attributes.Find(attr => attr.Name == "name")!.Value!,
-                Email = user.Attributes.Find(attr => attr.Name == "email")!.Value!,
-                Cpf = user.Attributes.Find(attr => attr.Name == "custom:cpf")?.Value ?? "",
-                Role = user.Attributes.Find(attr => attr.Name == "custom:role")!.Value!,
-                CreatedAt = (DateTime)user.UserCreateDate
+                Subject = claims?.FirstOrDefault(c => c.Type == "sub")?.Value ?? "",
+                Name = user?.Attributes.Find(attr => attr.Name == "name")?.Value ?? "",
+                Email = user?.Attributes.Find(attr => attr.Name == "email")?.Value ?? "",
+                Cpf = user?.Attributes.Find(attr => attr.Name == "custom:cpf")?.Value ?? "",
+                Role = user?.Attributes.Find(attr => attr.Name == "custom:role")?.Value ?? "",
+                CreatedAt = user?.UserCreateDate.GetValueOrDefault(DateTime.MinValue) ?? DateTime.MinValue
             };
         }
     }

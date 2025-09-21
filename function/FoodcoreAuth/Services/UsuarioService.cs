@@ -35,13 +35,13 @@ namespace Foodcore.Auth.Services
         /// <param name="httpMethod">Método HTTP da solicitação.</param>
         /// <exception cref="NotAuthorizedException">Lançada quando o usuário não tem permissão para acessar a URL, ou quando a URL não é fornecida.</exception>
         /// <returns></returns>
-        public static void UserCanAccessUrl(string url, Role userRole, string httpMethod)
+        public static void UserCanAccessUrl(string url, string httpMethod, Role? userRole = null)
         {
             // Implicit Deny
             var canAccess = false;
 
-            if (string.IsNullOrWhiteSpace(url))
-                throw new NotAuthorizedException("URL não fornecida.");
+            if (string.IsNullOrWhiteSpace(url) || string.IsNullOrWhiteSpace(httpMethod))
+                throw new NotAuthorizedException("URL ou método HTTP não fornecidos.");
 
             httpMethod = httpMethod.ToUpperInvariant();
             var authorizationRules = AuthorizationHelper.Rules;
@@ -57,7 +57,7 @@ namespace Foodcore.Auth.Services
                 if (rule.AllowedRoles == null)
                     return;
                 
-                canAccess = rule.AllowedRoles.Contains(userRole.ToString());
+                canAccess = rule.AllowedRoles.Contains(userRole?.ToString() ?? "");
             }
             
             if (!canAccess)
