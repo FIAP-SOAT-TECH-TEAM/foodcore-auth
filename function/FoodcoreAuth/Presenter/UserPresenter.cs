@@ -38,11 +38,6 @@ namespace Foodcore.Auth.Presenter
         /// <exception cref="InvalidOperationException">Lançada quando <paramref name="user"/> é nulo.</exception>
         public static UserDetailsDTO ToUserDetailsDTO(UserType? user = null, IEnumerable<Claim>? claims = null)
         {
-            if (user == null) throw new ArgumentException(null, nameof(user));
-            
-            if (user.UserCreateDate == null)
-                throw new BusinessException("A data de criação do usuário não pode ser nula.");
-
             return new UserDetailsDTO
             {
                 Subject = claims?.FirstOrDefault(c => c.Type == "sub")?.Value ?? "",
