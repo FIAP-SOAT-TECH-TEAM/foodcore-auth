@@ -14,6 +14,7 @@ using Microsoft.Azure.Functions.Worker.Http;
 using Amazon.CognitoIdentityProvider.Model;
 using Microsoft.Azure.WebJobs.Extensions.OpenApi.Core.Attributes;
 using Microsoft.OpenApi.Models;
+using System.Net;
 
 namespace Foodcore.Auth
 {
@@ -29,12 +30,12 @@ namespace Foodcore.Auth
         [Function("CreateUser")]
         [OpenApiOperation(operationId: "CreateUser", tags: new[] { "Users" })]
         [OpenApiRequestBody(contentType: "application/json", bodyType: typeof(UserCreateDTO), Required = true)]
-        [OpenApiResponseWithBody(statusCode: System.Net.HttpStatusCode.OK, contentType: "application/json", bodyType: typeof(UserCreatedResponseDTO), Description = "Usuário criado com sucesso")]
-        [OpenApiResponseWithBody(statusCode: System.Net.HttpStatusCode.BadRequest, contentType: "application/json", bodyType: typeof(ErrorDTO), Description = "Erro de negócio")]
-        [OpenApiResponseWithBody(statusCode: System.Net.HttpStatusCode.InternalServerError, contentType: "application/json", bodyType: typeof(ErrorDTO), Description = "Erro interno")]
+        [OpenApiResponseWithBody(statusCode: HttpStatusCode.OK, contentType: "application/json", bodyType: typeof(UserCreatedResponseDTO), Description = "Usuário criado com sucesso")]
+        [OpenApiResponseWithBody(statusCode: HttpStatusCode.BadRequest, contentType: "application/json", bodyType: typeof(ErrorDTO), Description = "Erro de negócio")]
+        [OpenApiResponseWithBody(statusCode: HttpStatusCode.InternalServerError, contentType: "application/json", bodyType: typeof(ErrorDTO), Description = "Erro interno")]
         public async Task<IActionResult> CreateUser(
         [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "users")]
-        [MsAzureFuncWorker.FromBody] UserCreateDTO userCreateDTO)
+        HttpRequestData httpRequestData, [MsAzureFuncWorker.FromBody] UserCreateDTO userCreateDTO)
         {
             try
             {
@@ -70,16 +71,19 @@ namespace Foodcore.Auth
             {
                 _logger.LogDebug(ex, "Erro de negócio ao criar usuário.");
 
-                var errorDto = CommonPresenter.ToErrorDTO(ex);
+                var responseStatusCode = (int)HttpStatusCode.BadRequest;
+                var errorDto = CommonPresenter.ToErrorDTO(ex, responseStatusCode, httpRequestData.Url.AbsolutePath);
 
                 return new BadRequestObjectResult(errorDto);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Erro ao criar usuário.");
-                var errorDto = CommonPresenter.ToErrorDTO(ex);
 
-                return new ObjectResult(errorDto) { StatusCode = 500 };
+                var responseStatusCode = (int)HttpStatusCode.InternalServerError;
+                var errorDto = CommonPresenter.ToErrorDTO(ex, responseStatusCode, httpRequestData.Url.AbsolutePath);
+
+                return new ObjectResult(errorDto) { StatusCode = responseStatusCode };
             }
         }
 
@@ -87,9 +91,9 @@ namespace Foodcore.Auth
         [OpenApiIgnore]
         [OpenApiOperation(operationId: "ValidateToken", tags: new[] { "Auth" })]
         [OpenApiParameter(name: "access_token", In = ParameterLocation.Query, Required = true, Type = typeof(string), Description = "Token JWT de acesso")]
-        [OpenApiResponseWithBody(statusCode: System.Net.HttpStatusCode.OK, contentType: "application/json", bodyType: typeof(UserDetailsDTO), Description = "Token validado com sucesso")]
-        [OpenApiResponseWithBody(statusCode: System.Net.HttpStatusCode.Unauthorized, contentType: "application/json", bodyType: typeof(ErrorDTO), Description = "Token inválido ou usuário não autorizado")]
-        [OpenApiResponseWithBody(statusCode: System.Net.HttpStatusCode.InternalServerError, contentType: "application/json", bodyType: typeof(ErrorDTO), Description = "Erro interno")]
+        [OpenApiResponseWithBody(statusCode: HttpStatusCode.OK, contentType: "application/json", bodyType: typeof(UserDetailsDTO), Description = "Token validado com sucesso")]
+        [OpenApiResponseWithBody(statusCode: HttpStatusCode.Unauthorized, contentType: "application/json", bodyType: typeof(ErrorDTO), Description = "Token inválido ou usuário não autorizado")]
+        [OpenApiResponseWithBody(statusCode: HttpStatusCode.InternalServerError, contentType: "application/json", bodyType: typeof(ErrorDTO), Description = "Erro interno")]
         public async Task<IActionResult> ValidateToken(
         [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "validate")]
         HttpRequestData httpRequestData)
@@ -132,36 +136,45 @@ namespace Foodcore.Auth
             catch (SecurityTokenException ex)
             {
                 _logger.LogWarning(ex, "Token inválido.");
-                var errorDto = CommonPresenter.ToErrorDTO(ex);
+
+                var responseStatusCode = (int)HttpStatusCode.Unauthorized;
+                var url = httpRequestData.Query["url"]!;
+                var errorDto = CommonPresenter.ToErrorDTO(ex, responseStatusCode, url);
 
                 return new UnauthorizedObjectResult(errorDto);
             }
             catch (NotAuthorizedException ex)
             {
                 _logger.LogWarning(ex, "Usuário não autorizado.");
-                var errorDto = CommonPresenter.ToErrorDTO(ex);
+
+                var responseStatusCode = (int)HttpStatusCode.Unauthorized;
+                var url = httpRequestData.Query["url"]!;
+                var errorDto = CommonPresenter.ToErrorDTO(ex, responseStatusCode, url);
 
                 return new UnauthorizedObjectResult(errorDto);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Erro ao validar token.");
-                var errorDto = CommonPresenter.ToErrorDTO(ex);
 
-                return new ObjectResult(errorDto) { StatusCode = 500 };
+                var responseStatusCode = (int)HttpStatusCode.InternalServerError;
+                var url = httpRequestData.Query["url"]!;
+                var errorDto = CommonPresenter.ToErrorDTO(ex, responseStatusCode, url);
+
+                return new ObjectResult(errorDto) { StatusCode = responseStatusCode };
             }
         }
 
         [Function("AuthCustomer")]
         [OpenApiOperation(operationId: "AuthCustomer", tags: new[] { "Auth" })]
         [OpenApiRequestBody(contentType: "application/json", bodyType: typeof(CustomerAuthDTO), Required = true)]
-        [OpenApiResponseWithBody(statusCode: System.Net.HttpStatusCode.OK, contentType: "application/json", bodyType: typeof(AuthResponseDTO), Description = "Autenticação de cliente realizada com sucesso")]
-        [OpenApiResponseWithBody(statusCode: System.Net.HttpStatusCode.BadRequest, contentType: "application/json", bodyType: typeof(ErrorDTO), Description = "Erro de negócio")]
-        [OpenApiResponseWithBody(statusCode: System.Net.HttpStatusCode.Unauthorized, contentType: "application/json", bodyType: typeof(ErrorDTO), Description = "Usuário não autorizado")]
-        [OpenApiResponseWithBody(statusCode: System.Net.HttpStatusCode.InternalServerError, contentType: "application/json", bodyType: typeof(ErrorDTO), Description = "Erro interno")]
+        [OpenApiResponseWithBody(statusCode: HttpStatusCode.OK, contentType: "application/json", bodyType: typeof(AuthResponseDTO), Description = "Autenticação de cliente realizada com sucesso")]
+        [OpenApiResponseWithBody(statusCode: HttpStatusCode.BadRequest, contentType: "application/json", bodyType: typeof(ErrorDTO), Description = "Erro de negócio")]
+        [OpenApiResponseWithBody(statusCode: HttpStatusCode.Unauthorized, contentType: "application/json", bodyType: typeof(ErrorDTO), Description = "Usuário não autorizado")]
+        [OpenApiResponseWithBody(statusCode: HttpStatusCode.InternalServerError, contentType: "application/json", bodyType: typeof(ErrorDTO), Description = "Erro interno")]
         public async Task<IActionResult> AuthCustomer(
         [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "customer/login")]
-        [MsAzureFuncWorker.FromBody] CustomerAuthDTO customerAuthDTO)
+        HttpRequestData httpRequestData, [MsAzureFuncWorker.FromBody] CustomerAuthDTO customerAuthDTO)
         {
             try
             {
@@ -206,23 +219,28 @@ namespace Foodcore.Auth
             {
                 _logger.LogDebug(ex, "Erro de negócio ao autenticar cliente.");
 
-                var errorDto = CommonPresenter.ToErrorDTO(ex);
+                var responseStatusCode = (int)HttpStatusCode.BadRequest;
+                var errorDto = CommonPresenter.ToErrorDTO(ex, responseStatusCode, httpRequestData.Url.AbsolutePath);
 
                 return new BadRequestObjectResult(errorDto);
             }
             catch (NotAuthorizedException ex)
             {
                 _logger.LogWarning(ex, "Usuário não autorizado.");
-                var errorDto = CommonPresenter.ToErrorDTO(ex);
+
+                var responseStatusCode = (int)HttpStatusCode.Unauthorized;
+                var errorDto = CommonPresenter.ToErrorDTO(ex, responseStatusCode, httpRequestData.Url.AbsolutePath);
 
                 return new UnauthorizedObjectResult(errorDto);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Erro ao autenticar cliente.");
-                var errorDto = CommonPresenter.ToErrorDTO(ex);
 
-                return new ObjectResult(errorDto) { StatusCode = 500 };
+                var responseStatusCode = (int)HttpStatusCode.InternalServerError;
+                var errorDto = CommonPresenter.ToErrorDTO(ex, responseStatusCode, httpRequestData.Url.AbsolutePath);
+
+                return new ObjectResult(errorDto) { StatusCode = responseStatusCode };
             }
         }
 

@@ -59,7 +59,9 @@ namespace Foodcore.Auth.Config
               new ErrorDTO
               {
                 Timestamp = DateTime.UtcNow,
-                Message = "Ocorreu um erro inesperado."
+                Status = 500,
+                Message = "Ocorreu um erro inesperado.",
+                Path = "/auth/login"
               },
               namingStrategy
           )
