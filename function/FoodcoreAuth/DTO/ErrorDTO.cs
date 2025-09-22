@@ -16,9 +16,21 @@ namespace Foodcore.Auth.DTO
     public DateTime Timestamp { get; set; } = DateTime.UtcNow;
 
     /// <summary>
+    /// Status do erro.
+    /// </summary>
+    [OpenApiProperty(Description = "Status do erro.")]
+    public int Status { get; set; }
+
+    /// <summary>
     /// Mensagem de erro.
     /// </summary>
     [OpenApiProperty(Description = "Mensagem de erro.")]
     public required string Message { get; set; } = "";
+
+    /// <summary>
+    /// Caminho onde o erro ocorreu.
+    /// </summary>
+    [OpenApiProperty(Description = "Caminho onde o erro ocorreu.")]
+    public required string Path { get; set; }
   }
 }
