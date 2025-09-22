@@ -28,7 +28,7 @@ namespace Foodcore.Auth
         private readonly CognitoSettings _settings = settings;
 
         [Function("CreateUser")]
-        [OpenApiOperation(operationId: "CreateUser", tags: new[] { "Users" })]
+        [OpenApiOperation(operationId: "CreateUser", tags: ["Users"])]
         [OpenApiRequestBody(contentType: "application/json", bodyType: typeof(UserCreateDTO), Required = true)]
         [OpenApiResponseWithBody(statusCode: HttpStatusCode.OK, contentType: "application/json", bodyType: typeof(UserCreatedResponseDTO), Description = "Usuário criado com sucesso")]
         [OpenApiResponseWithBody(statusCode: HttpStatusCode.BadRequest, contentType: "application/json", bodyType: typeof(ErrorDTO), Description = "Erro de negócio")]
@@ -89,7 +89,7 @@ namespace Foodcore.Auth
 
         [Function("ValidateToken")]
         [OpenApiIgnore]
-        [OpenApiOperation(operationId: "ValidateToken", tags: new[] { "Auth" })]
+        [OpenApiOperation(operationId: "ValidateToken", tags: ["Auth"])]
         [OpenApiParameter(name: "access_token", In = ParameterLocation.Query, Required = true, Type = typeof(string), Description = "Token JWT de acesso")]
         [OpenApiResponseWithBody(statusCode: HttpStatusCode.OK, contentType: "application/json", bodyType: typeof(UserDetailsDTO), Description = "Token validado com sucesso")]
         [OpenApiResponseWithBody(statusCode: HttpStatusCode.Unauthorized, contentType: "application/json", bodyType: typeof(ErrorDTO), Description = "Token inválido ou usuário não autorizado")]
@@ -166,7 +166,7 @@ namespace Foodcore.Auth
         }
 
         [Function("AuthCustomer")]
-        [OpenApiOperation(operationId: "AuthCustomer", tags: new[] { "Auth" })]
+        [OpenApiOperation(operationId: "AuthCustomer", tags: ["Auth"])]
         [OpenApiRequestBody(contentType: "application/json", bodyType: typeof(CustomerAuthDTO), Required = true)]
         [OpenApiResponseWithBody(statusCode: HttpStatusCode.OK, contentType: "application/json", bodyType: typeof(AuthResponseDTO), Description = "Autenticação de cliente realizada com sucesso")]
         [OpenApiResponseWithBody(statusCode: HttpStatusCode.BadRequest, contentType: "application/json", bodyType: typeof(ErrorDTO), Description = "Erro de negócio")]
