@@ -1,5 +1,6 @@
 using System.Text.RegularExpressions;
 using Amazon.CognitoIdentityProvider.Model;
+using Foodcore.Auth.Exceptions;
 using Foodcore.Auth.Helpers;
 using Foodcore.Auth.Model;
 
@@ -33,7 +34,8 @@ namespace Foodcore.Auth.Services
         /// <param name="url">URL que o usuário está tentando acessar.</param>
         /// <param name="userRole">Função do usuário (Role).</param>
         /// <param name="httpMethod">Método HTTP da solicitação.</param>
-        /// <exception cref="NotAuthorizedException">Lançada quando o usuário não tem permissão para acessar a URL, ou quando a URL não é fornecida.</exception>
+        /// <exception cref="AccessDeniedException">Lançada quando o usuário não tem permissão para acessar a URL, ou quando a URL não é fornecida.</exception>
+        /// <exception cref="BusinessException">Lançada quando a URL ou o método HTTP não são fornecidos.</exception>
         /// <returns></returns>
         public static void UserCanAccessUrl(string url, string httpMethod, Role? userRole = null)
         {
@@ -41,7 +43,7 @@ namespace Foodcore.Auth.Services
             var canAccess = false;
 
             if (string.IsNullOrWhiteSpace(url) || string.IsNullOrWhiteSpace(httpMethod))
-                throw new NotAuthorizedException("URL ou método HTTP não fornecidos.");
+                throw new BusinessException("URL ou método HTTP não fornecidos.");
 
             httpMethod = httpMethod.ToUpperInvariant();
             var authorizationRules = AuthorizationHelper.Rules;
@@ -61,7 +63,7 @@ namespace Foodcore.Auth.Services
             }
             
             if (!canAccess)
-                throw new NotAuthorizedException($"Usuário não tem permissão para acessar este recurso.");
+                throw new AccessDeniedException($"Você não tem permissão para acessar este recurso.");
         }
     }
 }
