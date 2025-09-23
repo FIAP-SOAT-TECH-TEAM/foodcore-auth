@@ -61,7 +61,7 @@ namespace Foodcore.Auth.Services
             }
             
             if (!canAccess)
-                throw new NotAuthorizedException($"Usuário não tem permissão para acessar este recurso: {url}.");
+                throw new NotAuthorizedException($"Usuário não tem permissão para acessar este recurso.");
         }
     }
 }
