@@ -133,6 +133,16 @@ namespace Foodcore.Auth
                 var response = UserPresenter.ToUserDetailsDTO(user, jwtToken.Claims);
                 return new OkObjectResult(response);
             }
+            catch (AccessDeniedException ex)
+            {
+                _logger.LogWarning(ex, "Acesso negado ao recurso.");
+
+                var responseStatusCode = (int)HttpStatusCode.Forbidden;
+                var url = httpRequestData.Query["url"]!;
+                var errorDto = CommonPresenter.ToErrorDTO(ex, responseStatusCode, url);
+
+                return new ObjectResult(errorDto) { StatusCode = responseStatusCode };
+            }
             catch (SecurityTokenException ex)
             {
                 _logger.LogWarning(ex, "Token inválido.");
@@ -152,6 +162,16 @@ namespace Foodcore.Auth
                 var errorDto = CommonPresenter.ToErrorDTO(ex, responseStatusCode, url);
 
                 return new UnauthorizedObjectResult(errorDto);
+            }
+            catch (BusinessException ex)
+            {
+                _logger.LogDebug(ex, "Erro de negócio ao validar token ou URL.");
+
+                var responseStatusCode = (int)HttpStatusCode.BadRequest;
+                var url = httpRequestData.Query["url"]!;
+                var errorDto = CommonPresenter.ToErrorDTO(ex, responseStatusCode, url);
+
+                return new BadRequestObjectResult(errorDto);
             }
             catch (Exception ex)
             {
