@@ -20,6 +20,7 @@ namespace Foodcore.Auth.Helpers
             #region Order Endpoints
             new SecurityRules { HttpMethod = "POST", Pattern = @"^/orders$", AllowedRoles = [Role.CUSTOMER.ToString()] },
             new SecurityRules { HttpMethod = "PATCH", Pattern = @"^/orders/.*$", AllowedRoles = [Role.ADMIN.ToString()] },
+            new SecurityRules { HttpMethod = "GET", Pattern = @"^/orders/.*$", AllowedRoles = [Role.ADMIN.ToString()] },
             new SecurityRules { HttpMethod = "GET", Pattern = @"^/orders/active$", AllowedRoles = [Role.ADMIN.ToString()] },
             #endregion
 
