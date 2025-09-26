@@ -17,9 +17,7 @@ namespace Foodcore.Auth.Services
         /// <param name="settings">Configurações do Cognito.</param>
         /// <param name="user">Instância do usuário.</param>
         /// <returns>Senha a ser utilizada para autenticação.</returns>
-        /// <exception cref="InvalidOperationException">
-        /// Lançada quando a variável de ambiente DEFAULT_CUSTOMER_PASSWORD não está definida para usuários do tipo cliente.
-        /// </exception>
+        /// <exception cref="BusinessException">Lançada quando a senha do usuário não está definida.</exception>
         public static string GetUserPassword(CognitoSettings settings, User user)
         {
             if (user.IsCustomer())    

@@ -223,14 +223,12 @@ namespace Foodcore.Auth
                 var userIsCustomer = existingUser.Attributes.Any(attr => attr.Name == "custom:role" && attr.Value == Role.CUSTOMER.ToString());
                 if (!userIsCustomer)
                     throw new BusinessException("Usuário não é um cliente.");
-
-                var password = Environment.GetEnvironmentVariable("DEFAULT_CUSTOMER_PASSWORD") ?? throw new InvalidOperationException("Default customer password not set.");
                 
                 var token = await CognitoService.AuthenticateUserAsync(
                     _cognito,
                     _settings,
                     existingUser.Username,
-                    password
+                    _settings.DefaultCustomerPassword
                 );
 
                 return new OkObjectResult(AuthPresenter.ToAuthResponseDTO(token));
