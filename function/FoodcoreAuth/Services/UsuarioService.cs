@@ -14,19 +14,20 @@ namespace Foodcore.Auth.Services
         /// <summary>
         /// Obtém a senha do usuário. Se for cliente, retorna a senha padrão definida na variável de ambiente.
         /// </summary>
+        /// <param name="settings">Configurações do Cognito.</param>
         /// <param name="user">Instância do usuário.</param>
         /// <returns>Senha a ser utilizada para autenticação.</returns>
-        /// <exception cref="InvalidOperationException">
-        /// Lançada quando a variável de ambiente DEFAULT_CUSTOMER_PASSWORD não está definida para usuários do tipo cliente.
-        /// </exception>
-        public static string GetUserPassword(User user)
+        /// <exception cref="BusinessException">Lançada quando a senha do usuário não está definida.</exception>
+        public static string GetUserPassword(CognitoSettings settings, User user)
         {
-            if (user.IsCustomer())
-            {
-                return Environment.GetEnvironmentVariable("DEFAULT_CUSTOMER_PASSWORD") ?? throw new InvalidOperationException("Default customer password not set.");
-            }
-
-            return user.Password!.Value;
+            if (user.IsCustomer())    
+                return settings.DefaultCustomerPassword;
+            
+            var password = user.Password;
+            if (password == null || string.IsNullOrWhiteSpace(password.Value))
+                throw new BusinessException("Senha do usuário não definida.");
+            
+            return password.Value;
         }
         /// <summary>
         /// Verifica se o usuário com a função especificada pode acessar a URL dada com o método HTTP fornecido.
