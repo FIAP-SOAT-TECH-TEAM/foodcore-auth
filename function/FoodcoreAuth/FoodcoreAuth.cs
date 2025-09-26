@@ -44,8 +44,8 @@ namespace Foodcore.Auth
                 var existingUser = await CognitoService.GetUserByEmailOrCpfAsync(
                     _cognito,
                     _settings,
-                    user.Email!.Value,
-                    user.Cpf!.Value
+                    user.Email?.Value ?? "",
+                    user.Cpf?.Value ?? ""
                 );
                 if (existingUser != null)
                     throw new BusinessException("Usuário com este email ou CPF já existe.");
