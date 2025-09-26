@@ -24,5 +24,10 @@ namespace Foodcore.Auth.Model
     /// E-mail do usuário convidado (guest user) utilizado para operações que não requerem autenticação.
     /// </summary>
     public required string GuestUserEmail { get; set; }
+
+    /// <summary>
+    /// Senha padrão para usuários do tipo cliente (customer).
+    /// </summary>
+    public required string DefaultCustomerPassword { get; set; }
   }
 }

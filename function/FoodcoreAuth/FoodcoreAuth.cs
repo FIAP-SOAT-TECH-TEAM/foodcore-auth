@@ -50,7 +50,7 @@ namespace Foodcore.Auth
                 if (existingUser != null)
                     throw new BusinessException("Usuário com este email ou CPF já existe.");
 
-                var password = UsuarioService.GetUserPassword(user);
+                var password = UsuarioService.GetUserPassword(_settings, user);
 
                 var createdUser = await CognitoService.CreateUser(
                     _cognito,

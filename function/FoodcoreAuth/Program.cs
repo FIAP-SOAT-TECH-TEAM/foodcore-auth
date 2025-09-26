@@ -36,9 +36,10 @@ var secretKey = credsDict.GetValueOrDefault("aws_secret_access_key");
 var sessionToken = credsDict.GetValueOrDefault("aws_session_token");
 
 var guestUserEmail = Environment.GetEnvironmentVariable("GUEST_USER_EMAIL");
+var defaultCustomerPassword = Environment.GetEnvironmentVariable("DEFAULT_CUSTOMER_PASSWORD");
 
-if (string.IsNullOrEmpty(guestUserEmail))
-    throw new InvalidOperationException("GuestUserEmail environment variable is not set.");
+if (string.IsNullOrEmpty(guestUserEmail) || string.IsNullOrEmpty(defaultCustomerPassword))
+    throw new InvalidOperationException("GuestUserEmail or DefaultCustomerPassword environment variable is not set.");
 
 var region = Environment.GetEnvironmentVariable("AWS_REGION");
 var userPoolId = Environment.GetEnvironmentVariable("COGNITO_USER_POOL_ID");
@@ -65,7 +66,8 @@ builder.ConfigureServices(services =>
         UserPoolId = userPoolId,
         AppClientId = appClientId,
         Region = region,
-        GuestUserEmail = guestUserEmail
+        GuestUserEmail = guestUserEmail,
+        DefaultCustomerPassword = defaultCustomerPassword
     });
 });
 
