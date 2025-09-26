@@ -97,11 +97,11 @@ namespace Foodcore.Auth.Services
         UserAttributes =
           [
               new() { Name = "name", Value = user.Name },
-              new() { Name = "email", Value = user.Email!.Value },
+              new() { Name = "email", Value = user.Email?.Value ?? "" },
               // Apenas campos nativos podem ser pesquisados, pois são indexados
               // Escolhi este para ser armazenar o CPF, assim conseguimos pesquisar por ele
-              new() { Name = "preferred_username", Value = user.Cpf!.Value },
-              new() { Name = "custom:cpf", Value = user.Cpf!.Value },
+              new() { Name = "preferred_username", Value = user.Cpf?.Value ?? "" },
+              new() { Name = "custom:cpf", Value = user.Cpf?.Value ?? "" },
               new() { Name = "custom:role", Value = user.GetRole().ToString()}
           ]
       };

@@ -29,24 +29,16 @@ namespace Foodcore.Auth.Model.ValueObjects
         throw new BusinessException("O CPF não pode ser nulo ou vazio.");
       }
 
-      var cleanedCpfValue = CleanCpf(value);
+      var isValid = Utils.CpfUtils.IsCpf(value);
 
-      if (cleanedCpfValue.Length != 11 || !cleanedCpfValue.All(char.IsDigit))
+      if (!isValid)
       {
-        throw new BusinessException("O CPF deve conter exatamente 11 dígitos numéricos.");
+        throw new BusinessException("O CPF informado é inválido.");
       }
 
-      Value = cleanedCpfValue;
-    }
+      var cleanedCpfValue = Utils.CpfUtils.CleanCpf(value);
 
-    /// <summary>
-    /// Remove pontuação (pontos e traços) e espaços do CPF.
-    /// </summary>
-    /// <param name="cpf">CPF a ser limpo.</param>
-    /// <returns>String contendo apenas os dígitos do CPF.</returns>
-    private static string CleanCpf(string cpf)
-    {
-      return cpf.Replace(".", "").Replace("-", "").Trim();
+      Value = cleanedCpfValue;
     }
 
   }
