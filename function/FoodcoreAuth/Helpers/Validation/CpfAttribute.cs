@@ -18,7 +18,10 @@ namespace Foodcore.Auth.Helpers.Validation
     /// <returns>True se for válido, caso contrário false.</returns>
     public override bool IsValid(object? value)
     {
-      return CpfUtils.IsCpf(value?.ToString() ?? string.Empty);
+      if (value == null || string.IsNullOrWhiteSpace(value.ToString())) 
+        return true;
+
+      return CpfUtils.IsCpf(value!.ToString()!);
     }
   }
 }
