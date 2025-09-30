@@ -25,11 +25,11 @@ namespace Foodcore.Auth.Helpers
             #endregion
 
             #region Catalog Endpoints
-            new SecurityRules { HttpMethod = "GET", Pattern = @"^/catalogs/.*$", AllowedRoles = [Role.ADMIN.ToString(), Role.CUSTOMER.ToString()] },
-            new SecurityRules { HttpMethod = "POST", Pattern = @"^/catalogs/.*$", AllowedRoles = [Role.ADMIN.ToString()] },
-            new SecurityRules { HttpMethod = "PATCH", Pattern = @"^/catalogs/.*$", AllowedRoles = [Role.ADMIN.ToString()] },
-            new SecurityRules { HttpMethod = "PUT", Pattern = @"^/catalogs/.*$", AllowedRoles = [Role.ADMIN.ToString()] },
-            new SecurityRules { HttpMethod = "DELETE", Pattern = @"^/catalogs/.*$", AllowedRoles = [Role.ADMIN.ToString()] },
+            new SecurityRules { HttpMethod = "GET", Pattern = @"^/catalogs.*$", AllowedRoles = [Role.ADMIN.ToString(), Role.CUSTOMER.ToString()] },
+            new SecurityRules { HttpMethod = "POST", Pattern = @"^/catalogs.*$", AllowedRoles = [Role.ADMIN.ToString()] },
+            new SecurityRules { HttpMethod = "PATCH", Pattern = @"^/catalogs.*$", AllowedRoles = [Role.ADMIN.ToString()] },
+            new SecurityRules { HttpMethod = "PUT", Pattern = @"^/catalogs.*$", AllowedRoles = [Role.ADMIN.ToString()] },
+            new SecurityRules { HttpMethod = "DELETE", Pattern = @"^/catalogs.*$", AllowedRoles = [Role.ADMIN.ToString()] },
             #endregion
 
             #region Payment Endpoints
