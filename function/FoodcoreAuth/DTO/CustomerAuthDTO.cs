@@ -15,7 +15,7 @@ namespace Foodcore.Auth.DTO
     /// E-mail do cliente.
     /// </summary>
     [OpenApiProperty(Description = "E-mail do cliente.")]
-    [EmailAddress(ErrorMessage = "O Email informado é inválido.")]
+    [NullableEmailAddress(ErrorMessage = "O Email informado é inválido.")]
     public string Email { get; set; } = "";
 
     /// <summary>
