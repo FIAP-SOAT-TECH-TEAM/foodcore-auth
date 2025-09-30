@@ -21,7 +21,7 @@ namespace Foodcore.Auth.Model.ValueObjects
     {
       if (string.IsNullOrWhiteSpace(value) || !value.Contains('@'))
       {
-        throw new BusinessException("Email inválido.");
+        throw new BusinessException("O Email informado é inválido.");
       }
       Value = value;
     }

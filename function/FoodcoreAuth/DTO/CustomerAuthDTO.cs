@@ -1,4 +1,6 @@
+using System.ComponentModel.DataAnnotations;
 using Foodcore.Auth.Config;
+using Foodcore.Auth.Helpers.Validation;
 using Microsoft.Azure.WebJobs.Extensions.OpenApi.Core.Attributes;
 
 namespace Foodcore.Auth.DTO
@@ -13,12 +15,14 @@ namespace Foodcore.Auth.DTO
     /// E-mail do cliente.
     /// </summary>
     [OpenApiProperty(Description = "E-mail do cliente.")]
+    [EmailAddress(ErrorMessage = "O Email informado é inválido.")]
     public string Email { get; set; } = "";
 
     /// <summary>
     /// CPF do cliente.
     /// </summary>
     [OpenApiProperty(Description = "CPF do cliente.")]
+    [Cpf(ErrorMessage = "O CPF informado é inválido.")]
     public string Cpf { get; set; } = "";
   }
 }

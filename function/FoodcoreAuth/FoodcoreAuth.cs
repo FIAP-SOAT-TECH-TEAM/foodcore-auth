@@ -15,6 +15,8 @@ using Amazon.CognitoIdentityProvider.Model;
 using Microsoft.Azure.WebJobs.Extensions.OpenApi.Core.Attributes;
 using Microsoft.OpenApi.Models;
 using System.Net;
+using Foodcore.Auth.Helpers.Validation;
+using System.ComponentModel.DataAnnotations;
 
 namespace Foodcore.Auth
 {
@@ -39,6 +41,8 @@ namespace Foodcore.Auth
         {
             try
             {
+                ValidationHelper.Validate(userCreateDTO);
+
                 var user = UserMapper.ToModel(userCreateDTO);
 
                 var existingUser = await CognitoService.GetUserByEmailOrCpfAsync(
@@ -66,6 +70,15 @@ namespace Foodcore.Auth
                 );
 
                 return new OkObjectResult(UserPresenter.ToUserCreatedResponse(createdUser));
+            }
+            catch (ValidationException ex)
+            {
+                _logger.LogWarning(ex, "Erro de validação nos dados de criação do usuário.");
+
+                var responseStatusCode = (int)HttpStatusCode.BadRequest;
+                var errorDto = CommonPresenter.ToErrorDTO(ex, responseStatusCode, httpRequestData.Url.AbsolutePath);
+
+                return new BadRequestObjectResult(errorDto);
             }
             catch (BusinessException ex)
             {
@@ -198,6 +211,8 @@ namespace Foodcore.Auth
         {
             try
             {
+                ValidationHelper.Validate(customerAuthDTO);
+                
                 UserType? existingUser = null;
 
                 var isGuestAuthentication = string.IsNullOrWhiteSpace(customerAuthDTO.Email) && string.IsNullOrWhiteSpace(customerAuthDTO.Cpf);
@@ -232,6 +247,15 @@ namespace Foodcore.Auth
                 );
 
                 return new OkObjectResult(AuthPresenter.ToAuthResponseDTO(token));
+            }
+            catch (ValidationException ex)
+            {
+                _logger.LogWarning(ex, "Erro de validação nos dados de autenticação do cliente.");
+
+                var responseStatusCode = (int)HttpStatusCode.BadRequest;
+                var errorDto = CommonPresenter.ToErrorDTO(ex, responseStatusCode, httpRequestData.Url.AbsolutePath);
+
+                return new BadRequestObjectResult(errorDto);
             }
             catch (BusinessException ex)
             {
