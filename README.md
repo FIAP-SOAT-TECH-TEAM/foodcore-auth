@@ -7,7 +7,7 @@ da FIAP (Tech Challenge).
   <a href="#visao-geral">Visão Geral</a> •
   <a href="#tecnologias">Tecnologias</a> •
   <a href="#fluxo-de-autenticacao">Fluxo de Autenticação</a> •
-  <a href="#exemplo-de-fluxo">Exemplo de Fluxo</a> •
+  <a href="#exemplo-de-fluxo">Exemplo de Fluxo</a>
 </div><br>
 
 # 🔑 Lambda de Autenticação - Identificação via CPF (C# + Cognito)
