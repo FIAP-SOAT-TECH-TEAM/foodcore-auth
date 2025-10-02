@@ -5,18 +5,53 @@ da FIAP (Tech Challenge).
 
 <div align="center">
   <a href="#visao-geral">Visão Geral</a> •
-  <a href="#arquitetura">Arquitetura</a> •
-  <a href="#infra">Infraestrutura</a> •
   <a href="#tecnologias">Tecnologias</a> •
-  <a href="#diagramas">Diagramas</a> •
-  <a href="#eventstorming">Event Storming</a> •
-  <a href="#taskboard">Task Board</a> •
-  <a href="#dicionario">Dicionário de linguagem ubíqua</a> •
-  <a href="#instalacao-e-uso">Instalação e Uso</a> •
-  <a href="#provisionamento-na-nuvem">Provisionar o projeto na nuvem</a> •
-  <a href="#estrutura-do-projeto">Estrutura do Projeto</a> • <br/>
-  <a href="#apis">APIs</a> •
-  <a href="#banco-de-dados">Banco de Dados</a> •
-  <a href="#resolucao-de-problemas">Resolução de Problemas</a> •
-  <a href="#contribuicao-e-licenca">Contribuição e Licença</a>
+  <a href="#fluxo-de-autenticacao">Fluxo de Autenticação</a> •
+  <a href="#exemplo-de-fluxo">Exemplo de Fluxo</a> •
 </div><br>
+
+# 🔑 Lambda de Autenticação - Identificação via CPF (C# + Cognito)
+
+## 📖 Visão Geral
+
+A Lambda é responsável pela **identificação de clientes** no sistema de autoatendimento.
+Ela recebe o **CPF** do cliente, consulta o **Cognito**, gera um **JWT** e retorna o token para o **API Gateway (APIM)**, que repassa a chamada para a **FoodCore API**.
+
+## 🚀 Tecnologias
+
+- **C# .NET 8 AWS Lambda Runtime**
+- **Azure APIM** (API Gateway)
+- **AWS Cognito** (identificação/autenticação sem senha, apenas CPF ou Email)
+- **JWT** para comunicação segura
+- **GitHub Actions + Terraform** para deploy
+
+## 🔄 Fluxo de Autenticação
+
+1. O **usuário** informa o **CPF** ou **CPF** no frontend. Caso o usuário não informe nada, uma requisição será enviada ao **APIM** solicitando um usuário temporário(GUEST)
+2. A requisição chega no **APIM**, que redireciona para a **Azure Function (Lambda em C#)**.
+3. A **Lambda**:
+   - Valida o CPF ou Email caso forem enviados.
+   - Consulta o **Cognito**.
+   - Caso exista, gera um **JWT** assinado.
+   - Retorna o token para o **APIM**.
+4. O **APIM** repassa a requisição com o **JWT** no header para a **FoodCore API**.
+5. A **API** valida o JWT e continua o fluxo (pedido, consulta etc.).
+
+## 🧩 Exemplo de Fluxo
+
+```mermaid
+sequenceDiagram
+    participant User
+    participant APIM
+    participant Lambda
+    participant Cognito
+    participant API
+
+    User->>APIM: POST /auth {cpf}
+    APIM->>Lambda: Invoca função com CPF
+    Lambda->>Cognito: Consulta cliente
+    Cognito-->>Lambda: Retorna dados
+    Lambda-->>APIM: Retorna JWT
+    APIM->>API: Chamada autenticada com JWT
+    API-->>User: Retorna dados do pedido
+
