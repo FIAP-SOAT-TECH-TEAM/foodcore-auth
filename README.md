@@ -47,8 +47,8 @@ sequenceDiagram
     participant Cognito
     participant API
 
-    User->>APIM: POST /auth {cpf}
-    APIM->>Lambda: Invoca função com CPF
+    User->>APIM: POST /login {cpf} ou {email}
+    APIM->>Lambda: Invoca função com CPF ou EMAIL
     Lambda->>Cognito: Consulta cliente
     Cognito-->>Lambda: Retorna dados
     Lambda-->>APIM: Retorna JWT
