@@ -34,7 +34,20 @@ Ela recebe o **CPF** do cliente, consulta o **Cognito**, gera um **JWT** e retor
    - Assinatura do token via **JWKS público da AWS**
    - Se o usuário tem permissão de acessar o path solicitado (com base na Role)
    - O mecanismo é **implicit deny** (qualquer falha = acesso negado).
-5. O **APIM** repassa a requisição com o **JWT** no header para a **FoodCore API**.
+   - Se o token for válido, a Function retorna um body semelhante a esse:
+
+    ```json
+    {
+      "subject": "a1b2c3d4-e5f6-7890-abcd-1234567890ef",
+      "name": "João da Silva",
+      "email": "joao.silva@example.com",
+      "cpf": "12345678900",
+      "role": "ADMIN",
+      "createdAt": "2025-10-02T09:30:00Z"
+    }
+    ```
+
+5. O **APIM** repassa a requisição com o **JWT** e todos os atributos retornados pela lambda em headers HTTP para a **FoodCore API**.
 
 ## 🧩 Exemplo de Fluxo
 
