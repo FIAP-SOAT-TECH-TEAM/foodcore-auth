@@ -27,15 +27,14 @@ Ela recebe o **CPF** do cliente, consulta o **Cognito**, gera um **JWT** e retor
 
 ## 🔄 Fluxo de Autenticação
 
-1. O **usuário** informa o **CPF** ou **CPF** no frontend. Caso o usuário não informe nada, uma requisição será enviada ao **APIM** solicitando um usuário temporário(GUEST)
+1. O usuário informa **CPF ou EMAIL** no frontend.
 2. A requisição chega no **APIM**, que redireciona para a **Azure Function (Lambda em C#)**.
-3. A **Lambda**:
-   - Valida o CPF ou Email caso forem enviados.
-   - Consulta o **Cognito**.
-   - Caso exista, gera um **JWT** assinado.
-   - Retorna o token para o **APIM**.
-4. O **APIM** repassa a requisição com o **JWT** no header para a **FoodCore API**.
-5. A **API** valida o JWT e continua o fluxo (pedido, consulta etc.).
+3. O Cognito gera um **JWT**.
+4. A **Azure Function** valida:
+   - Assinatura do token via **JWKS público da AWS**
+   - Se o usuário tem permissão de acessar o path solicitado (com base na Role)
+   - O mecanismo é **implicit deny** (qualquer falha = acesso negado).
+5. O **APIM** repassa a requisição com o **JWT** no header para a **FoodCore API**.
 
 ## 🧩 Exemplo de Fluxo
 
