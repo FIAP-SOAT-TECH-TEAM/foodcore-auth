@@ -19,13 +19,13 @@ Ela recebe o **CPF** do cliente, consulta o **Cognito**, gera um **JWT** e retor
 
 ## 🚀 Tecnologias
 
-- **C# .NET 8 AWS Lambda Runtime**
+- **C# .NET 9 AWS Lambda Runtime**
 - **Azure APIM** (API Gateway)
 - **AWS Cognito** (identificação/autenticação sem senha, apenas CPF ou Email)
 - **JWT** para comunicação segura
 - **GitHub Actions + Terraform** para deploy
 
-## 🔄 Fluxo de Autenticação
+## 🔄 Fluxo de Autenticação de clientes
 
 1. O usuário informa **CPF ou EMAIL** no frontend.
 2. A requisição chega no **APIM**, que redireciona para a **Azure Function (Lambda em C#)**.
@@ -49,7 +49,7 @@ Ela recebe o **CPF** do cliente, consulta o **Cognito**, gera um **JWT** e retor
 
 5. O **APIM** repassa a requisição com o **JWT** e todos os atributos retornados pela lambda em headers HTTP para a **FoodCore API**.
 
-## 🧩 Exemplo de Fluxo
+## 🧩 Exemplo de Fluxo (cliente)
 
 ```mermaid
 sequenceDiagram
