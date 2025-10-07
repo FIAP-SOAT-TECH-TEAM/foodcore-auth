@@ -85,7 +85,8 @@ Nos outputs do Terraform, dois links são disponibilizados:
 | **Hosted UI (Authorization Code Flow)**
 Retorna um **código de autorização**, que deve ser trocado por um **JWT** via requisição de back-end.
 
-🧭 Fluxos de Autenticação Cognito
+### 🧭 Fluxos de Autenticação Cognito
+
 🔸 Implicit Flow
 
 Fluxo mais simples, retorna o token diretamente após o login.
