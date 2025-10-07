@@ -79,7 +79,6 @@ Os links da Hosted UI são expostos como outputs do Terraform e podem ser consul
 
 Nos outputs do Terraform, dois links são disponibilizados:
 
-                                                                                        | Uso                                                                       |
 | **Hosted UI (Implicit Flow)**
  Realiza login e retorna o **JWT diretamente na URL** após a autenticação.
 
