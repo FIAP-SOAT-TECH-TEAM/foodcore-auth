@@ -6,8 +6,8 @@ da FIAP (Tech Challenge).
 <div align="center">
   <a href="#visao-geral">Visão Geral</a> •
   <a href="#tecnologias">Tecnologias</a> •
-  <a href="#fluxo-de-autenticacao">Fluxo de Autenticação</a> •
-  <a href="#exemplo-de-fluxo">Exemplo de Fluxo</a>
+  <a href="#autenticacao-de-clientes">Autenticação de clientes</a> •
+  <a href="#autenticacao-de-administradores">Autenticação de administradores</a>
 </div><br>
 
 # 🔑 Lambda de Autenticação - Identificação via CPF (C# + Cognito)
@@ -25,7 +25,7 @@ Ela recebe o **CPF** do cliente, consulta o **Cognito**, gera um **JWT** e retor
 - **JWT** para comunicação segura
 - **GitHub Actions + Terraform** para deploy
 
-## 🔄 Fluxo de Autenticação de clientes
+## 🔄 Autenticação de clientes
 
 1. O usuário informa **CPF ou EMAIL** no frontend.
 2. A requisição chega no **APIM**, que redireciona para a **Azure Function (Lambda em C#)**.
@@ -49,7 +49,7 @@ Ela recebe o **CPF** do cliente, consulta o **Cognito**, gera um **JWT** e retor
 
 5. O **APIM** repassa a requisição com o **JWT** e todos os atributos retornados pela lambda em headers HTTP para a **FoodCore API**.
 
-## 🧩 Exemplo de Fluxo (cliente)
+### Exemplo de Fluxo (cliente)
 
 ```mermaid
 sequenceDiagram
@@ -66,4 +66,93 @@ sequenceDiagram
     Lambda-->>APIM: Retorna JWT
     APIM->>API: Chamada autenticada com JWT
     API-->>User: Retorna dados do pedido
+```
 
+## 🧑‍💼 Autenticação de Administradores
+
+Diferente dos clientes, administradores não autenticam via Lambda.
+Eles utilizam diretamente a Hosted UI do AWS Cognito, onde realizam login com usuário e senha.
+
+Os links da Hosted UI são expostos como outputs do Terraform e podem ser consultados no pipeline de CD (GitHub Actions) após o deploy.
+
+### 🔗 Recuperando os links de autenticação
+
+Nos outputs do Terraform, dois links são disponibilizados:
+
+| Tipo                                    | Descrição                                                                                             | Uso                                                                       |
+| --------------------------------------- | ----------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| **Hosted UI (Implicit Flow)**           | Realiza login e retorna o **JWT diretamente na URL** após a autenticação.                             | Ideal para **testes rápidos** e **ambientes sem back-end** intermediário. |
+| **Hosted UI (Authorization Code Flow)** | Retorna um **código de autorização**, que deve ser trocado por um **JWT** via requisição de back-end. | Indicado para **ambientes de produção** e maior segurança.                |
+
+🧭 Fluxos de Autenticação Cognito
+🔸 Implicit Flow
+
+Fluxo mais simples, retorna o token diretamente após o login.
+
+Exemplo:
+
+```mermaid
+sequenceDiagram
+    participant Admin
+    participant Cognito
+    participant APIM
+    participant API
+
+    Admin->>Cognito: Acessa Hosted UI (implicit URL)
+    Cognito-->>Admin: Retorna JWT na URL (fragment)
+    Admin->>APIM: Chamada autenticada com JWT
+    APIM->>API: Repassa token válido
+    API-->>Admin: Retorna dados administrativos
+```
+
+Exemplo de URL (output Terraform):
+
+```bash
+https://foodcore-auth-domain.auth.us-east-1.amazoncognito.com/login?
+client_id=xxxxxxx&
+response_type=token&
+scope=email+openid+profile&
+redirect_uri=https://foodcore.admin.app/login/callback
+```
+
+🔸 Authorization Code Flow
+
+Fluxo mais seguro — retorna um código que o back-end troca por um JWT.
+Esse método evita exposição do token diretamente na URL.
+
+Exemplo:
+
+```mermaid
+sequenceDiagram
+    participant Admin
+    participant Cognito
+    participant Backend
+    participant APIM
+    participant API
+
+    Admin->>Cognito: Acessa Hosted UI (code URL)
+    Cognito-->>Admin: Redireciona com Authorization Code
+    Admin->>Backend: Envia code recebido
+    Backend->>Cognito: Troca code por JWT
+    Cognito-->>Backend: Retorna JWT
+    Backend->>APIM: Chamada autenticada com JWT
+    APIM->>API: Repassa token válido
+    API-->>Backend: Retorna dados administrativos
+```
+
+Exemplo de URL (output Terraform):
+
+```bash
+https://foodcore-auth-domain.auth.us-east-1.amazoncognito.com/login?
+client_id=xxxxxxx&
+response_type=code&
+scope=email+openid+profile&
+redirect_uri=https://foodcore.admin.app/login/callback
+```
+
+✅ Resumo
+
+| Tipo de Usuário   | Método de Login                           | Origem do JWT        | Meio de Validação                             |
+| ----------------- | ----------------------------------------- | -------------------- | --------------------------------------------- |
+| **Cliente**       | CPF/Email via Azure Function              | Cognito (via Lambda) | Azure Function valida assinatura e permissões |
+| **Administrador** | Hosted UI Cognito (Implicit ou Code Flow) | Cognito Hosted UI    | APIM valida token via JWKS público da AWS     |
