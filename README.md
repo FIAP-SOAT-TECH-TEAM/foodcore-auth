@@ -79,10 +79,12 @@ Os links da Hosted UI são expostos como outputs do Terraform e podem ser consul
 
 Nos outputs do Terraform, dois links são disponibilizados:
 
-| Tipo                                    | Descrição                                                                                             | Uso                                                                       |
-| --------------------------------------- | ----------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
-| **Hosted UI (Implicit Flow)**           | Realiza login e retorna o **JWT diretamente na URL** após a autenticação.                             | Ideal para **testes rápidos** e **ambientes sem back-end** intermediário. |
-| **Hosted UI (Authorization Code Flow)** | Retorna um **código de autorização**, que deve ser trocado por um **JWT** via requisição de back-end. | Indicado para **ambientes de produção** e maior segurança.                |
+                                                                                        | Uso                                                                       |
+| **Hosted UI (Implicit Flow)**
+ Realiza login e retorna o **JWT diretamente na URL** após a autenticação.
+
+| **Hosted UI (Authorization Code Flow)**
+Retorna um **código de autorização**, que deve ser trocado por um **JWT** via requisição de back-end.
 
 🧭 Fluxos de Autenticação Cognito
 🔸 Implicit Flow
