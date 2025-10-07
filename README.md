@@ -10,6 +10,8 @@ da FIAP (Tech Challenge).
   <a href="#autenticacao-de-administradores">Autenticação de administradores</a>
 </div><br>
 
+> 📽️ Vídeo de demonstração da arquitetura: [https://www.youtube.com/watch?v=soaATSbSRPc](https://www.youtube.com/watch?v=XgUpOKJjqak)<br>
+
 # 🔑 Lambda de Autenticação - Identificação via CPF (C# + Cognito)
 
 ## 📖 Visão Geral
