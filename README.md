@@ -11,6 +11,8 @@ da FIAP (Tech Challenge).
   <a href="#cicd-infra">Governança e Fluxo de Deploy</a>
 </div><br>
 
+> 📽️ Vídeo de demonstração da arquitetura: [https://www.youtube.com/watch?v=soaATSbSRPc](https://www.youtube.com/watch?v=XgUpOKJjqak)<br>
+
 # 🔑 Lambda de Autenticação - Identificação via CPF (C# + Cognito)
 
 ## 📖 Visão Geral
@@ -80,10 +82,10 @@ Os links da Hosted UI são expostos como outputs do Terraform e podem ser consul
 
 Nos outputs do Terraform, dois links são disponibilizados:
 
-| **Hosted UI (Implicit Flow)**
+- **Hosted UI (Implicit Flow)**
  Realiza login e retorna o **JWT diretamente na URL** após a autenticação.
 
-| **Hosted UI (Authorization Code Flow)**
+- **Hosted UI (Authorization Code Flow)**
 Retorna um **código de autorização**, que deve ser trocado por um **JWT** via requisição de back-end.
 
 ### 🧭 Fluxos de Autenticação Cognito
