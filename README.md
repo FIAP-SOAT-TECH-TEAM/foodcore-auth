@@ -186,12 +186,13 @@ Esse fluxo garante segurança, rastreabilidade e aprovação formal antes de qua
    - O resultado do `plan` é exibido diretamente nos logs do pipeline, permitindo revisão técnica pelos aprovadores.
 
 3. **Revisão e Aprovação**
-   - O repositório é **protegido**, exigindo no mínimo **2 aprovações** antes do merge.
+   - O repositório é **protegido**, exigindo no mínimo **1 aprovação** de um codeowner antes do merge.
    - Nenhum usuário pode aplicar alterações diretamente na branch principal (`main` ou `master`).
    - Revisores devem garantir:
      - Que o `plan` não tenha destruições indevidas (`destroy`)
      - Que as variáveis e roles estejam corretas
      - Que os módulos sigam o padrão organizacional
+   - Todos os checks(ex: jobs do github actions, sonarQube, etc..) estipulados nas regras de proteção devem estar passando.
 
 4. **Aplicação no Merge**
    - Após aprovação e merge do PR, o pipeline executa automaticamente:
