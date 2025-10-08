@@ -1,6 +1,3 @@
-<<<<<<< HEAD
-
-=======
 # 🔑​ Food Core Auth
 
 API serveless para authenticação e permissão de usuários de restaurantes fast-food, desenvolvida como parte do curso de Arquitetura de Software
@@ -207,4 +204,3 @@ Esse fluxo garante segurança, rastreabilidade e aprovação formal antes de qua
    - O **Terraform Apply** aplica as alterações descritas no `plan` aprovado, provisionando ou atualizando os recursos no Azure.
 
 ---
->>>>>>> feature/fia-30-documentacao-dos-repositorios
