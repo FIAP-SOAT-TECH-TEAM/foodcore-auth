@@ -70,20 +70,59 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0 # Shallow clones should be disabled for better SonarCloud analysis
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '9.0.x'
-      
+
+      - name: Setup Java (required for SonarScanner)
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Install SonarScanner for .NET
+        run: dotnet tool install --global dotnet-sonarscanner
+
       - name: Setup Azure Functions Core Tools
         run: npm install -g azure-functions-core-tools@4 --unsafe-perm true
 
       - name: Dependencies Restore
         run: dotnet restore
 
+      - name: Begin SonarCloud Analysis
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_CLOUD_TOKEN }}
+        run: |
+          dotnet sonarscanner begin \
+            /k:"FIAP-SOAT-TECH-TEAM_foodcore-auth" \
+            /o:"fiap-soat-tech-team" \
+            /d:sonar.host.url="https://sonarcloud.io" \
+            /d:sonar.token="${{ secrets.SONAR_CLOUD_TOKEN }}" \
+            /d:sonar.cs.opencover.reportsPaths="./function/TestResults/**/coverage.opencover.xml" \
+            /d:sonar.exclusions="**/obj/**,**/bin/**,**/*.Designer.cs,**/Migrations/**,**/FoodcoreAuth.Tests/**" \
+            /d:sonar.coverage.exclusions="**/Program.cs,**/Config/**,**/DTO/**,**/Exceptions/**,**/Properties/**"
+
       - name: Build
         run: dotnet build --configuration Release --no-restore
+
+      - name: Run Tests with Coverage
+        working-directory: ./function
+        run: |
+          dotnet test TC4.sln \
+            --configuration Release \
+            --no-build \
+            --collect:"XPlat Code Coverage" \
+            --results-directory ./TestResults \
+            -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover
+
+      - name: End SonarCloud Analysis
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_CLOUD_TOKEN }}
+        run: dotnet sonarscanner end /d:sonar.token="${{ secrets.SONAR_CLOUD_TOKEN }}"
 
       - name: Publish Function
         run: dotnet publish --configuration Release --output ./publish

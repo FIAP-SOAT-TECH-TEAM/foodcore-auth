@@ -6,6 +6,7 @@ da FIAP (Tech Challenge).
 <div align="center">
   <a href="#visao-geral">Visão Geral</a> •
   <a href="#tecnologias">Tecnologias</a> •
+  <a href="#executando-os-testes">Testes</a> •
   <a href="#autenticacao-de-clientes">Autenticação de clientes</a> •
   <a href="#autenticacao-de-administradores">Autenticação de administradores</a> •
   <a href="#cicd-infra">Governança e Fluxo de Deploy</a>
@@ -27,6 +28,29 @@ Ela recebe o **CPF** do cliente, consulta o **Cognito**, gera um **JWT** e retor
 - **AWS Cognito** (identificação/autenticação sem senha, apenas CPF ou Email)
 - **JWT** para comunicação segura
 - **GitHub Actions + Terraform** para deploy
+- **xUnit + FluentAssertions** para testes unitários
+- **SonarCloud** para análise de qualidade de código
+
+## 🧪 Executando os Testes
+
+### Comandos
+
+```bash
+# Navegar para a pasta da solution
+cd function
+
+# Restaurar dependências
+dotnet restore TC4.sln
+
+# Executar todos os testes
+dotnet test TC4.sln
+
+# Executar testes com cobertura de código
+dotnet test TC4.sln --collect:"XPlat Code Coverage"
+
+# Executar testes com output detalhado
+dotnet test TC4.sln --logger "console;verbosity=detailed"
+```
 
 ## 🔄 Autenticação de clientes
 
