@@ -53,4 +53,121 @@ public class CpfUtilsTests
             CpfUtils.IsCpf(cpf).Should().BeFalse($"CPF {cpf} com dígitos repetidos deveria ser inválido");
         }
     }
+
+    [Fact]
+    public void IsCpf_WithEmptyString_ShouldReturnFalse()
+    {
+        // Arrange
+        var cpf = "";
+
+        // Act
+        var result = CpfUtils.IsCpf(cpf);
+
+        // Assert
+        result.Should().BeFalse();
+    }
+
+    [Fact]
+    public void IsCpf_WithWhitespaceOnly_ShouldReturnFalse()
+    {
+        // Arrange
+        var cpf = "   ";
+
+        // Act
+        var result = CpfUtils.IsCpf(cpf);
+
+        // Assert
+        result.Should().BeFalse();
+    }
+
+    [Fact]
+    public void CleanCpf_WithEmptyString_ShouldReturnEmptyString()
+    {
+        // Arrange
+        var cpf = "";
+
+        // Act
+        var result = CpfUtils.CleanCpf(cpf);
+
+        // Assert
+        result.Should().BeEmpty();
+    }
+
+    [Fact]
+    public void CleanCpf_WithWhitespaceOnly_ShouldReturnEmptyString()
+    {
+        // Arrange
+        var cpf = "   ";
+
+        // Act
+        var result = CpfUtils.CleanCpf(cpf);
+
+        // Assert
+        result.Should().BeEmpty();
+    }
+
+    [Fact]
+    public void CleanCpf_WithOnlyDots_ShouldRemoveThem()
+    {
+        // Arrange
+        var cpf = "...";
+
+        // Act
+        var result = CpfUtils.CleanCpf(cpf);
+
+        // Assert
+        result.Should().BeEmpty();
+    }
+
+    [Fact]
+    public void CleanCpf_WithOnlyDashes_ShouldRemoveThem()
+    {
+        // Arrange
+        var cpf = "---";
+
+        // Act
+        var result = CpfUtils.CleanCpf(cpf);
+
+        // Assert
+        result.Should().BeEmpty();
+    }
+
+    [Fact]
+    public void IsCpf_WithFormattedValidCpf_ShouldReturnTrue()
+    {
+        // Arrange
+        var cpf = "529.982.247-25";
+
+        // Act
+        var result = CpfUtils.IsCpf(cpf);
+
+        // Assert
+        result.Should().BeTrue();
+    }
+
+    [Fact]
+    public void IsCpf_WithUnformattedValidCpf_ShouldReturnTrue()
+    {
+        // Arrange
+        var cpf = "52998224725";
+
+        // Act
+        var result = CpfUtils.IsCpf(cpf);
+
+        // Assert
+        result.Should().BeTrue();
+    }
+
+    [Fact]
+    public void IsCpf_WithWrongCheckDigits_ShouldReturnFalse()
+    {
+        // Arrange - CPF com dígitos verificadores trocados
+        var cpf = "52998224726";
+
+        // Act
+        var result = CpfUtils.IsCpf(cpf);
+
+        // Assert
+        result.Should().BeFalse();
+    }
 }
