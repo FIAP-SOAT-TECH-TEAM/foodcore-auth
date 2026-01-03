@@ -125,6 +125,7 @@ jobs:
           zip -r ../functionapp.zip .
 
       - name: Generate OpenApi File
+        working-directory: ./function/FoodcoreAuth
         run: |
           cat <<EOF > .env
           AWS_CREDENTIALS="[default]
