@@ -94,8 +94,6 @@ jobs:
         run: dotnet restore
 
       - name: Begin SonarCloud Analysis
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_CLOUD_TOKEN }}
         run: |
           dotnet sonarscanner begin \
             /k:"FIAP-SOAT-TECH-TEAM_foodcore-auth" \
@@ -120,8 +118,6 @@ jobs:
             -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover
 
       - name: End SonarCloud Analysis
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_CLOUD_TOKEN }}
         run: dotnet sonarscanner end /d:sonar.token="${{ secrets.SONAR_CLOUD_TOKEN }}"
 
       - name: Publish Function
