@@ -112,14 +112,8 @@ jobs:
             --configuration Release \
             --no-build \
             --collect:"XPlat Code Coverage" \
-            --results-directory ./TestResults
-
-      - name: Debug - List Coverage Files
-        run: |
-          echo "=== Listando arquivos de cobertura gerados ==="
-          find ./TestResults -name "*.xml" -type f || echo "Nenhum arquivo XML encontrado"
-          echo "=== Estrutura de diretórios TestResults ==="
-          ls -la ./TestResults/ || echo "TestResults não encontrado"
+            --results-directory ./TestResults \
+            -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover
 
       - name: End SonarCloud Analysis
         run: dotnet sonarscanner end /d:sonar.token="${{ secrets.SONAR_CLOUD_TOKEN }}"
