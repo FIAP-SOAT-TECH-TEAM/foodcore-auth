@@ -73,7 +73,7 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v3
         with:
-          fetch-depth: 0 # Shallow clones should be disabled for better SonarCloud analysis
+          fetch-depth: 0
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
@@ -96,12 +96,14 @@ jobs:
         run: dotnet restore
 
       - name: Begin SonarCloud Analysis
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           dotnet sonarscanner begin \
             /k:"FIAP-SOAT-TECH-TEAM_foodcore-auth" \
             /o:"fiap-soat-tech-team" \
             /d:sonar.token="${{ secrets.SONAR_CLOUD_TOKEN }}" \
-            /d:sonar.cs.opencover.reportsPaths="**/coverage.opencover.xml"
+            /d:sonar.cs.opencover.reportsPaths="${{ github.workspace }}/function/TestResults/**/coverage.opencover.xml"
 
       - name: Build
         run: dotnet build --configuration Release --no-restore
@@ -112,10 +114,15 @@ jobs:
             --configuration Release \
             --no-build \
             --collect:"XPlat Code Coverage" \
-            --results-directory ./TestResults \
+            --results-directory "${{ github.workspace }}/function/TestResults" \
             -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover
 
+      - name: List Coverage Files
+        run: find ${{ github.workspace }}/function/TestResults -name "*.xml" -type f 2>/dev/null || echo "No coverage files found"
+
       - name: End SonarCloud Analysis
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: dotnet sonarscanner end /d:sonar.token="${{ secrets.SONAR_CLOUD_TOKEN }}"
 
       - name: Publish Function
