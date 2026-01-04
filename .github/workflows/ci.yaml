@@ -103,7 +103,10 @@ jobs:
             /k:"FIAP-SOAT-TECH-TEAM_foodcore-auth" \
             /o:"fiap-soat-tech-team" \
             /d:sonar.token="${{ secrets.SONAR_CLOUD_TOKEN }}" \
-            /d:sonar.cs.opencover.reportsPaths="${{ github.workspace }}/function/TestResults/**/coverage.opencover.xml"
+            /d:sonar.cs.opencover.reportsPaths="${{ github.workspace }}/function/TestResults/**/coverage.opencover.xml" \
+            /d:sonar.pullrequest.key="${{ github.event.pull_request.number }}" \
+            /d:sonar.pullrequest.branch="${{ github.head_ref }}" \
+            /d:sonar.pullrequest.base="${{ github.base_ref }}"
 
       - name: Build
         run: dotnet build --configuration Release --no-restore
