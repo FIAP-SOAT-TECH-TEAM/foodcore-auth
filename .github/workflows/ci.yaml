@@ -102,7 +102,7 @@ jobs:
             /o:"fiap-soat-tech-team" \
             /d:sonar.host.url="https://sonarcloud.io" \
             /d:sonar.token="${{ secrets.SONAR_CLOUD_TOKEN }}" \
-            /d:sonar.cs.opencover.reportsPaths="**/TestResults/**/coverage.opencover.xml" \
+            /d:sonar.cs.vscoveragexml.reportsPaths="**/TestResults/**/coverage.cobertura.xml" \
             /d:sonar.exclusions="**/obj/**,**/bin/**,**/*.Designer.cs,**/Migrations/**,**/FoodcoreAuth.Tests/**" \
             /d:sonar.coverage.exclusions="**/Program.cs,**/Config/**,**/DTO/**,**/Exceptions/**,**/Properties/**"
 
@@ -111,7 +111,18 @@ jobs:
 
       - name: Run Tests with Coverage
         run: |
-          dotnet test TC4.sln --configuration Release --no-build --collect:"XPlat Code Coverage" --results-directory ./TestResults -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover
+          dotnet test TC4.sln \
+            --configuration Release \
+            --no-build \
+            --collect:"XPlat Code Coverage" \
+            --results-directory ./TestResults
+
+      - name: Debug - List Coverage Files
+        run: |
+          echo "=== Listando arquivos de cobertura gerados ==="
+          find ./TestResults -name "*.xml" -type f || echo "Nenhum arquivo XML encontrado"
+          echo "=== Estrutura de diretórios TestResults ==="
+          ls -la ./TestResults/ || echo "TestResults não encontrado"
 
       - name: End SonarCloud Analysis
         run: dotnet sonarscanner end /d:sonar.token="${{ secrets.SONAR_CLOUD_TOKEN }}"
