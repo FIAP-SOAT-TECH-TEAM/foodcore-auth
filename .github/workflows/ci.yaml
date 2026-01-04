@@ -102,9 +102,9 @@ jobs:
             /o:"fiap-soat-tech-team" \
             /d:sonar.host.url="https://sonarcloud.io" \
             /d:sonar.token="${{ secrets.SONAR_CLOUD_TOKEN }}" \
-            /d:sonar.cs.vscoveragexml.reportsPaths="**/TestResults/**/coverage.opencover.xml" \
+            /d:sonar.cs.opencover.reportsPaths="**/TestResults/**/coverage.opencover.xml" \
             /d:sonar.exclusions="**/obj/**,**/bin/**,**/*.Designer.cs,**/Migrations/**,**/FoodcoreAuth.Tests/**" \
-            /d:sonar.coverage.exclusions="**/Program.cs,**/Config/**,**/DTO/**,**/Exceptions/**,**/Properties/**"
+            /d:sonar.coverage.exclusions="**/Program.cs,**/Config/**,**/DTO/**,**/Exceptions/**,**/Properties/**" \
 
       - name: Build
         run: dotnet build --configuration Release --no-restore
