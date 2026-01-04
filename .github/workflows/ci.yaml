@@ -102,7 +102,7 @@ jobs:
             /o:"fiap-soat-tech-team" \
             /d:sonar.host.url="https://sonarcloud.io" \
             /d:sonar.token="${{ secrets.SONAR_CLOUD_TOKEN }}" \
-            /d:sonar.cs.vscoveragexml.reportsPaths="**/TestResults/**/coverage.cobertura.xml" \
+            /d:sonar.cs.vscoveragexml.reportsPaths="**/TestResults/**/coverage.opencover.xml" \
             /d:sonar.exclusions="**/obj/**,**/bin/**,**/*.Designer.cs,**/Migrations/**,**/FoodcoreAuth.Tests/**" \
             /d:sonar.coverage.exclusions="**/Program.cs,**/Config/**,**/DTO/**,**/Exceptions/**,**/Properties/**"
 
