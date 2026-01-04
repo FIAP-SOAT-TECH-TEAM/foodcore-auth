@@ -102,7 +102,7 @@ jobs:
             /k:"FIAP-SOAT-TECH-TEAM_foodcore-auth" \
             /o:"fiap-soat-tech-team" \
             /d:sonar.token="${{ secrets.SONAR_CLOUD_TOKEN }}" \
-            /d:sonar.cs.opencover.reportsPaths="**/coverage.opencover.xml" \
+            /d:sonar.cs.opencover.reportsPaths="${{ github.workspace }}/function/TestResults/**/coverage.opencover.xml" \
             /d:sonar.pullrequest.key="${{ github.event.pull_request.number }}" \
             /d:sonar.pullrequest.branch="${{ github.head_ref }}" \
             /d:sonar.pullrequest.base="${{ github.base_ref }}"
@@ -118,12 +118,15 @@ jobs:
             --configuration Release \
             --no-build \
             --collect:"XPlat Code Coverage" \
-            --results-directory ./TestResults \
+            --results-directory "${{ github.workspace }}/function/TestResults" \
             -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover
 
       - name: List Coverage Files
-        working-directory: ./function
-        run: find ./TestResults -name "*.xml" -type f 2>/dev/null || echo "No coverage files found"
+        run: |
+          echo "=== Coverage files found ==="
+          find ${{ github.workspace }}/function/TestResults -name "*.xml" -type f
+          echo "=== Coverage file content preview ==="
+          head -20 $(find ${{ github.workspace }}/function/TestResults -name "coverage.opencover.xml" -type f | head -1) || echo "Could not read coverage file"
 
       - name: End SonarCloud Analysis
         working-directory: ./function
