@@ -66,9 +66,6 @@ jobs:
 
   build:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./function/
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
@@ -93,9 +90,11 @@ jobs:
         run: npm install -g azure-functions-core-tools@4 --unsafe-perm true
 
       - name: Dependencies Restore
+        working-directory: ./function
         run: dotnet restore
 
       - name: Begin SonarCloud Analysis
+        working-directory: ./function
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -103,35 +102,41 @@ jobs:
             /k:"FIAP-SOAT-TECH-TEAM_foodcore-auth" \
             /o:"fiap-soat-tech-team" \
             /d:sonar.token="${{ secrets.SONAR_CLOUD_TOKEN }}" \
-            /d:sonar.cs.opencover.reportsPaths="${{ github.workspace }}/function/TestResults/**/coverage.opencover.xml" \
+            /d:sonar.cs.opencover.reportsPaths="**/coverage.opencover.xml" \
             /d:sonar.pullrequest.key="${{ github.event.pull_request.number }}" \
             /d:sonar.pullrequest.branch="${{ github.head_ref }}" \
             /d:sonar.pullrequest.base="${{ github.base_ref }}"
 
       - name: Build
+        working-directory: ./function
         run: dotnet build --configuration Release --no-restore
 
       - name: Run Tests with Coverage
+        working-directory: ./function
         run: |
           dotnet test TC4.sln \
             --configuration Release \
             --no-build \
             --collect:"XPlat Code Coverage" \
-            --results-directory "${{ github.workspace }}/function/TestResults" \
+            --results-directory ./TestResults \
             -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover
 
       - name: List Coverage Files
-        run: find ${{ github.workspace }}/function/TestResults -name "*.xml" -type f 2>/dev/null || echo "No coverage files found"
+        working-directory: ./function
+        run: find ./TestResults -name "*.xml" -type f 2>/dev/null || echo "No coverage files found"
 
       - name: End SonarCloud Analysis
+        working-directory: ./function
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: dotnet sonarscanner end /d:sonar.token="${{ secrets.SONAR_CLOUD_TOKEN }}"
 
       - name: Publish Function
+        working-directory: ./function
         run: dotnet publish --configuration Release --output ./publish
 
       - name: Zip package
+        working-directory: ./function
         run: |
           cd publish
           zip -r ../functionapp.zip .
