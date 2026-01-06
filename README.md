@@ -1,5 +1,4 @@
-# 🔑 FoodCore Auth
-
+# � FoodCore Auth
 
 <div align="center">
 
@@ -222,7 +221,7 @@ dotnet test TC4.sln --logger "console;verbosity=detailed"
 
 ---
 
-<h2 id="deploy">⚙️ Governança e Fluxo de Deploy</h2>
+<h2 id="deploy">⚙️ Fluxo de Deploy</h2>
 
 <details>
 <summary>Expandir para mais detalhes</summary>
@@ -252,7 +251,7 @@ dotnet test TC4.sln --logger "console;verbosity=detailed"
 
 ---
 
-<h2 id="contribuicao">🤝 Contribuição e Licença</h2>
+<h2 id="contribuicao">🤝 Contribuição</h2>
 
 ### Desenvolvimento Local
 
