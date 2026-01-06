@@ -66,34 +66,89 @@ jobs:
 
   build:
     runs-on: ubuntu-latest
-    needs: infra-info
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '9.0.x'
-      
+
+      - name: Setup Java (required for SonarScanner)
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Install SonarScanner for .NET
+        run: dotnet tool install --global dotnet-sonarscanner
+
       - name: Setup Azure Functions Core Tools
         run: npm install -g azure-functions-core-tools@4 --unsafe-perm true
 
       - name: Dependencies Restore
+        working-directory: ./function
         run: dotnet restore
 
+      - name: Begin SonarCloud Analysis
+        working-directory: ./function
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          dotnet sonarscanner begin \
+            /k:"FIAP-SOAT-TECH-TEAM_foodcore-auth" \
+            /o:"fiap-soat-tech-team" \
+            /d:sonar.token="${{ secrets.SONAR_CLOUD_TOKEN }}" \
+            /d:sonar.sources="FoodcoreAuth" \
+            /d:sonar.tests="FoodcoreAuth.Tests" \
+            /d:sonar.cs.opencover.reportsPaths="${{ github.workspace }}/function/TestResults/**/coverage.opencover.xml" \
+            /d:sonar.coverage.exclusions="**/Program.cs,**/*.g.cs,**/obj/**" \
+            /d:sonar.pullrequest.key="${{ github.event.pull_request.number }}" \
+            /d:sonar.pullrequest.branch="${{ github.head_ref }}" \
+            /d:sonar.pullrequest.base="${{ github.base_ref }}"
+
       - name: Build
+        working-directory: ./function
         run: dotnet build --configuration Release --no-restore
 
+      - name: Run Tests with Coverage
+        working-directory: ./function
+        run: |
+          dotnet test TC4.sln \
+            --configuration Release \
+            --no-build \
+            --collect:"XPlat Code Coverage" \
+            --results-directory "${{ github.workspace }}/function/TestResults" \
+            -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover
+
+      - name: List Coverage Files
+        run: |
+          echo "=== Coverage files found ==="
+          find ${{ github.workspace }}/function/TestResults -name "*.xml" -type f
+          echo "=== Coverage file content preview ==="
+          head -20 $(find ${{ github.workspace }}/function/TestResults -name "coverage.opencover.xml" -type f | head -1) || echo "Could not read coverage file"
+
+      - name: End SonarCloud Analysis
+        working-directory: ./function
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: dotnet sonarscanner end /d:sonar.token="${{ secrets.SONAR_CLOUD_TOKEN }}"
+
       - name: Publish Function
+        working-directory: ./function
         run: dotnet publish --configuration Release --output ./publish
 
       - name: Zip package
+        working-directory: ./function
         run: |
           cd publish
           zip -r ../functionapp.zip .
 
       - name: Generate OpenApi File
+        working-directory: ./function/FoodcoreAuth
         run: |
           cat <<EOF > .env
           AWS_CREDENTIALS="[default]
