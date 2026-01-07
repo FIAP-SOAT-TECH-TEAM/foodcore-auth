@@ -1,0 +1,569 @@
+{
+	"info": {
+		"_postman_id": "eced5ff6-cc51-40cd-a502-c7653eb32d32",
+		"name": "Foodcore Auth",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "27377062"
+	},
+	"item": [
+		{
+			"name": "Auth 🔑",
+			"item": [
+				{
+					"name": "Validate Token",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{azFuncLocalUrl}}/validate?access_token=eyJraWQiOiJ2bG5nQ3FlRUJjUllqM1FGbWFFY29vOVBWdlBJN2pseVV3ZVFsTEh5K2pJPSIsImFsZyI6IlJTMjU2In0.eyJzdWIiOiJiNGQ4YzRkOC03MDExLTcwYjAtMTQyMC1mYjBkYjcxMzQ0MDMiLCJpc3MiOiJodHRwczpcL1wvY29nbml0by1pZHAudXMtZWFzdC0xLmFtYXpvbmF3cy5jb21cL3VzLWVhc3QtMV9mVmhid0tlbTciLCJjbGllbnRfaWQiOiIyZnFwaDM3dmJoajkyYzg2OWkxaDBmMzh0cyIsIm9yaWdpbl9qdGkiOiJmNTA3YTA4ZS02ZGJlLTQ4N2QtYjA3NS00YWI2NDI5NzEwYzMiLCJldmVudF9pZCI6IjQxZTQxMWRkLWZlNjgtNGM4My1iZjE4LTgyN2ViODdkYmEyYSIsInRva2VuX3VzZSI6ImFjY2VzcyIsInNjb3BlIjoiYXdzLmNvZ25pdG8uc2lnbmluLnVzZXIuYWRtaW4iLCJhdXRoX3RpbWUiOjE3NTg1OTE0MTcsImV4cCI6MTc1ODU5NTAxNywiaWF0IjoxNzU4NTkxNDE3LCJqdGkiOiI2MWQ3Zjg2ZS0zYTg3LTQwZDktYjFlNS04ODZkODY4OTkxY2IiLCJ1c2VybmFtZSI6Imd1ZXN0X2N1c3RvbWVyIn0.VqOAkzinhREEUHH8z6qvf2iz7Ypd7hgKFFsxmJGQN_5-Yi-921Idnrqt7uMGXqva-42i20nGStMTtHA5h3rMc1t0F-DL5RwD3LJiyvAn1m3LV25Rn4uDisQip6EfoPE4qqlGIigrQxC6vz5au2lhsJsM3qMOAt-Dv_y6nAInDBsQ2YULptZuVRCwmaeC66V1tyCBijzw0s0gnQU8EqDMmWZyXrKXRqYGBnQtDntod8imNTsoB8g9OOPQOfPmpZSB0q-Ad88zblhWocXu0-sQDIfbDPWQH4RajluUHyQX0OT1uklkbe8hHgCgmATLNyKapmLguvScmWdCncJgaostRQ&url=/orders&http_method=POST",
+							"host": [
+								"{{azFuncLocalUrl}}"
+							],
+							"path": [
+								"validate"
+							],
+							"query": [
+								{
+									"key": "access_token",
+									"value": "eyJraWQiOiJ2bG5nQ3FlRUJjUllqM1FGbWFFY29vOVBWdlBJN2pseVV3ZVFsTEh5K2pJPSIsImFsZyI6IlJTMjU2In0.eyJzdWIiOiJiNGQ4YzRkOC03MDExLTcwYjAtMTQyMC1mYjBkYjcxMzQ0MDMiLCJpc3MiOiJodHRwczpcL1wvY29nbml0by1pZHAudXMtZWFzdC0xLmFtYXpvbmF3cy5jb21cL3VzLWVhc3QtMV9mVmhid0tlbTciLCJjbGllbnRfaWQiOiIyZnFwaDM3dmJoajkyYzg2OWkxaDBmMzh0cyIsIm9yaWdpbl9qdGkiOiJmNTA3YTA4ZS02ZGJlLTQ4N2QtYjA3NS00YWI2NDI5NzEwYzMiLCJldmVudF9pZCI6IjQxZTQxMWRkLWZlNjgtNGM4My1iZjE4LTgyN2ViODdkYmEyYSIsInRva2VuX3VzZSI6ImFjY2VzcyIsInNjb3BlIjoiYXdzLmNvZ25pdG8uc2lnbmluLnVzZXIuYWRtaW4iLCJhdXRoX3RpbWUiOjE3NTg1OTE0MTcsImV4cCI6MTc1ODU5NTAxNywiaWF0IjoxNzU4NTkxNDE3LCJqdGkiOiI2MWQ3Zjg2ZS0zYTg3LTQwZDktYjFlNS04ODZkODY4OTkxY2IiLCJ1c2VybmFtZSI6Imd1ZXN0X2N1c3RvbWVyIn0.VqOAkzinhREEUHH8z6qvf2iz7Ypd7hgKFFsxmJGQN_5-Yi-921Idnrqt7uMGXqva-42i20nGStMTtHA5h3rMc1t0F-DL5RwD3LJiyvAn1m3LV25Rn4uDisQip6EfoPE4qqlGIigrQxC6vz5au2lhsJsM3qMOAt-Dv_y6nAInDBsQ2YULptZuVRCwmaeC66V1tyCBijzw0s0gnQU8EqDMmWZyXrKXRqYGBnQtDntod8imNTsoB8g9OOPQOfPmpZSB0q-Ad88zblhWocXu0-sQDIfbDPWQH4RajluUHyQX0OT1uklkbe8hHgCgmATLNyKapmLguvScmWdCncJgaostRQ"
+								},
+								{
+									"key": "url",
+									"value": "/orders"
+								},
+								{
+									"key": "http_method",
+									"value": "POST"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "successfully / 200",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json"
+									},
+									{
+										"key": "User-Agent",
+										"value": "insomnia/2023.5.8"
+									}
+								],
+								"url": {
+									"raw": "{{baseURL2}}/validate",
+									"host": [
+										"{{baseURL2}}"
+									],
+									"path": [
+										"validate"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "text",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 23 Sep 2025 01:44:36 GMT"
+								},
+								{
+									"key": "Server",
+									"value": "Kestrel"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								}
+							],
+							"cookie": [],
+							"body": "application/json; charset=utf-8 content type is not supported in the response body"
+						}
+					]
+				},
+				{
+					"name": "Create User",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Ocp-Apim-Subscription-Key",
+								"value": "{{foodcoreStartSubscription}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\t\"Name\": \"Admin\",\r\n\t\"Email\": \"admin@email.com\",\r\n\t\"Password\": \"Foodcore123@\",\r\n\t\"Cpf\": \"89752271030\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{apimBaseUrl}}/auth/users",
+							"host": [
+								"{{apimBaseUrl}}"
+							],
+							"path": [
+								"auth",
+								"users"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "successfully / 200",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Ocp-Apim-Subscription-Key",
+										"value": "2edc07e87324499597d483090390f4c7"
+									},
+									{
+										"key": "User-Agent",
+										"value": "insomnia/11.6.0"
+									}
+								],
+								"url": {
+									"raw": "{{baseURL1}}/auth/users",
+									"host": [
+										"{{baseURL1}}"
+									],
+									"path": [
+										"auth",
+										"users"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "text",
+							"header": [
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Request-Context",
+									"value": "appId=cid-v1:f1873271-1bbe-4671-ab2d-ba35129a9a03"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 23 Sep 2025 00:38:51 GMT"
+								}
+							],
+							"cookie": [],
+							"body": "application/json; charset=utf-8 content type is not supported in the response body"
+						}
+					]
+				},
+				{
+					"name": "Customer Login",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Ocp-Apim-Subscription-Key",
+								"value": "{{foodcoreStartSubscription}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\t\"Email\": \"jao@email.com\",\r\n\t\"Cpf\": \"12345678910\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{apimBaseUrl}}/auth/customer/login",
+							"host": [
+								"{{apimBaseUrl}}"
+							],
+							"path": [
+								"auth",
+								"customer",
+								"login"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "successfully / 200",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Ocp-Apim-Subscription-Key",
+										"value": "2edc07e87324499597d483090390f4c7"
+									},
+									{
+										"key": "User-Agent",
+										"value": "insomnia/2023.5.8"
+									}
+								],
+								"url": {
+									"raw": "{{baseURL1}}/auth/customer/login",
+									"host": [
+										"{{baseURL1}}"
+									],
+									"path": [
+										"auth",
+										"customer",
+										"login"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "text",
+							"header": [
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Request-Context",
+									"value": "appId=cid-v1:f1873271-1bbe-4671-ab2d-ba35129a9a03"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 23 Sep 2025 03:39:52 GMT"
+								}
+							],
+							"cookie": [],
+							"body": "application/json; charset=utf-8 content type is not supported in the response body"
+						}
+					]
+				},
+				{
+					"name": "Get Tokens By Authorization Code - Cognito",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "grant_type",
+									"value": "authorization_code",
+									"type": "text"
+								},
+								{
+									"key": "client_id",
+									"value": "j49492aom0rlimv6po8fou4cf",
+									"type": "text"
+								},
+								{
+									"key": "code",
+									"value": "920abe6c-ad58-44de-9fe1-c48b2e2e044a",
+									"type": "text"
+								},
+								{
+									"key": "redirect_uri",
+									"value": "https://httpbin.org/get",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{cognitoDomainUrl}}/oauth2/token",
+							"host": [
+								"{{cognitoDomainUrl}}"
+							],
+							"path": [
+								"oauth2",
+								"token"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": " / 400",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/x-www-form-urlencoded"
+									},
+									{
+										"key": "User-Agent",
+										"value": "insomnia/2023.5.8"
+									}
+								],
+								"url": {
+									"raw": "{{baseURL3}}/oauth2/token",
+									"host": [
+										"{{baseURL3}}"
+									],
+									"path": [
+										"oauth2",
+										"token"
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": "text",
+							"header": [
+								{
+									"key": "date",
+									"value": "Sun, 14 Sep 2025 14:11:22 GMT"
+								},
+								{
+									"key": "content-type",
+									"value": "application/json;charset=UTF-8"
+								},
+								{
+									"key": "x-amz-cognito-request-id",
+									"value": "6fe66d2c-730c-414d-8f85-d4d81fbeb3a8"
+								},
+								{
+									"key": "x-content-type-options",
+									"value": "nosniff"
+								},
+								{
+									"key": "x-xss-protection",
+									"value": "1; mode=block"
+								},
+								{
+									"key": "cache-control",
+									"value": "no-cache, no-store, max-age=0, must-revalidate"
+								},
+								{
+									"key": "pragma",
+									"value": "no-cache"
+								},
+								{
+									"key": "expires",
+									"value": "0"
+								},
+								{
+									"key": "strict-transport-security",
+									"value": "max-age=31536000 ; includeSubDomains"
+								},
+								{
+									"key": "x-frame-options",
+									"value": "DENY"
+								},
+								{
+									"key": "server",
+									"value": "Server"
+								}
+							],
+							"cookie": [],
+							"body": "application/json;charset=UTF-8 content type is not supported in the response body"
+						}
+					]
+				},
+				{
+					"name": "Get Tokens By Refresh Token - Cognito",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "grant_type",
+									"value": "refresh_token",
+									"type": "text"
+								},
+								{
+									"key": "client_id",
+									"value": "j49492aom0rlimv6po8fou4cf",
+									"type": "text"
+								},
+								{
+									"key": "refresh_token",
+									"value": "eyJjdHkiOiJKV1QiLCJlbmMiOiJBMjU2R0NNIiwiYWxnIjoiUlNBLU9BRVAifQ.T-7W8Ds3gm9mOtL04IYRti-9Iux2buwbdhZCkOQ2ClTVgKyha-yms6DlCz_EY3MvbuFX2h-jEQ1x8jB92ipJPcBKLUDFQXhsUqK0rwWAkO2iJ7PwAUs0sA4naUthN0OnKOp6QhvVawdJ0C0EXKsSbuGS1kkHDmyPIsNGY-jVCAiBFmC-_GXzlaCxzH8vO6kdXUC80y1UZQQavD9o9TKDDFnLc7psbtAohKy3NQDAbWFM5gJ5IkglWnyhsIIGOQbxHsbAhR38TcNVJzNK3lE349Q57V4oHy0UAFi7a_gQa2__cZRGaxYCOxbQW0oQ282Zq7L4jgmr3P3TpEt8XkbgwA.ksvo6ki2MFMK5nGS.Lv6OY9gkAp5IS0QQIJqQtxjfwAAqegXTvGatfd-LH7j4zg-8uPjsuQlJpg41Z2ccbWfebQZJD7CcLZsZL5b334G9-OFtvlZ5UY3xx2vTc3PKh-VZEiC2Pm_6xFu6FBaSmqaaLNKytVUXkb-4yICQhrL-8U3p-VhF59gPWpvX62EVm6u4qwBPIhA_KRYRvUaddVskIq5L9uXY8OtXYlFSnJUJG5zNSiBYQhZJxTjeTZSTbNsUJuzjGXQxuYL7ddrH4bVBm_aLlPRPMZ0zwTz8s7FVND-WrQaggJe7WtxfAjZEiTgzYk4CgkWDiTHgGcOGJQJTalbvN8L7niei568kfyM8t9degQmDgmclyKj6bbi6eMSKuVXnsNpRysNQVIin16-JLxRqqFo5ruDfNyGU95sZY91413Agf4wALONov6Wek1QygqeXMZd7UFOZrY-h7NPRZepUu_TXZ2P41QL4LnRvVtrOQvSJfrHW89xPs-KrzdQNAJ0yI1Po3JANBtA8EzJ65O6G9J3sfKJvDJBuEpFh6WNmO2RwwPF1mWDZXgENcw29NmdEhcCV9H3k8TmVEHXN0FKYHEAdNjq_DcwelVcGuPitXnE_oNFFyWJEFQAW_n3bTxqLniTu3qi6cyY6gtzbkfm5Bw-0gJYmUro46CDgT1B9GlDNCaskCYhGh8DSUBQKd1qjXOFo7Ontn2KxHNRzU64PyYbicz8-i2oLoeYRFVN3Ec_-RTp3CQDvPTeMk1012q3VLJlC9t-ETGLd0lItDuUtudXUZfcjubiNPU6Q50KQbTXVCKBtdafaavbdPjOsjQmng1pcoI4urEbELTQcmt96PcvXGEUq60Rfeh-VyEGR-15LBVE496uCKGdJCcMeSntGwD5CaonKT5W-hQMmnLZ-aDGR7QCPjIJpn1VLzqmi7tmCHLQPxEXoyQroT3XQjB-m96hhKB2DVrkNwAAMsdJ-a-tURbSlIiawnCI1Fj8GOwRgCQVauGExlh1xGQZ7xBd2yVZ5qsN9o-j_mnHHV2kth7DGljp_utRww6u5GuveVkYdb3vaiuZCE4HrFjG1nMat7-gdvZrF8CIgJnZrTXtskTFjxY1RYAjHLfD8g_JWolTE5NDUiZ2ijxhSbRiygyeOI-vu1o-zCv3Bi2DZIkaF6Dm19tJGsGRDXwO0FSmRYWvP1q8Wd382jQ8uIHX75G_XB3OsSdTJ0v--ZC5dDnUdiKE6sPIWGP7iSSB38Tr_1kRak4UTQF9qlNZ3z_T4f32r1LWmJnls-Ia78grnU4E4eQ.ZONLwrTDg_DpvkFA2QZWvQ",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{cognitoDomainUrl}}/oauth2/token",
+							"host": [
+								"{{cognitoDomainUrl}}"
+							],
+							"path": [
+								"oauth2",
+								"token"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "successfully / 200",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/x-www-form-urlencoded"
+									},
+									{
+										"key": "User-Agent",
+										"value": "insomnia/2023.5.8"
+									}
+								],
+								"url": {
+									"raw": "{{baseURL3}}/oauth2/token",
+									"host": [
+										"{{baseURL3}}"
+									],
+									"path": [
+										"oauth2",
+										"token"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "text",
+							"header": [
+								{
+									"key": "date",
+									"value": "Sun, 14 Sep 2025 14:12:46 GMT"
+								},
+								{
+									"key": "content-type",
+									"value": "application/json;charset=UTF-8"
+								},
+								{
+									"key": "x-amz-cognito-request-id",
+									"value": "4cba70fe-28c7-4602-b799-984d16ac66f3"
+								},
+								{
+									"key": "x-content-type-options",
+									"value": "nosniff"
+								},
+								{
+									"key": "x-xss-protection",
+									"value": "1; mode=block"
+								},
+								{
+									"key": "cache-control",
+									"value": "no-cache, no-store, max-age=0, must-revalidate"
+								},
+								{
+									"key": "pragma",
+									"value": "no-cache"
+								},
+								{
+									"key": "expires",
+									"value": "0"
+								},
+								{
+									"key": "strict-transport-security",
+									"value": "max-age=31536000 ; includeSubDomains"
+								},
+								{
+									"key": "x-frame-options",
+									"value": "DENY"
+								},
+								{
+									"key": "server",
+									"value": "Server"
+								}
+							],
+							"cookie": [],
+							"body": "application/json;charset=UTF-8 content type is not supported in the response body"
+						}
+					]
+				}
+			],
+			"description": "Responsável pela autenticação e gerenciamento de tokens de usuários e clientes. Aqui você consegue criar usuários, realizar logins e validar ou renovar tokens de acesso de forma segura."
+		}
+	]
+}
