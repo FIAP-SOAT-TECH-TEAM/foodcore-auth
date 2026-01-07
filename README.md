@@ -26,6 +26,24 @@ Azure Function serverless responsável pela autenticação e autorização de us
 
 ---
 
+<h2 id="limitacoes-quota">Limitações de Quota (Azure for Students)</h2>
+
+> A assinatura **Azure for Students** impõe as seguintes restrições:
+>
+> - **Região**: Brazil South não está disponível. Utilizamos **South Central US** como alternativa
+>
+> - **Quota de VMs**: Apenas **2 instâncias** do SKU utilizado para o node pool do AKS, tendo um impacto direto na escalabilidade do cluster. Quando o limite é atingido, novos nós não podem ser criados e dão erro no provisionamento de workloads.
+>
+> ### Erro no CD dos Microsserviços
+>
+> Durante o deploy dos microsserviços, Pods podem ficar com status **Pending** e o seguinte erro pode aparecer:
+>
+> <img src=".github/images/error.jpeg" alt="Error" />
+>
+> **Causa**: O cluster atingiu o limite máximo de VMs permitido pela quota e não há recursos computacionais (CPU/memória) disponíveis nos nós existentes.
+>
+> **Solução**: Aguardar a liberação de recursos de outros pods e reexecutar CI + CD.
+
 <h2 id="visao-geral">📋 Visão Geral</h2>
 
 O **FoodCore Auth** é uma Azure Function que implementa o padrão **Lambda Authorizer**, responsável pela identificação e autorização de usuários no sistema de autoatendimento.
