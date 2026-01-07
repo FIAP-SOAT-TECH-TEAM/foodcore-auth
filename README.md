@@ -1,82 +1,131 @@
-# 🔑​ Food Core Auth
+# � FoodCore Auth
 
-API serveless para authenticação e permissão de usuários de restaurantes fast-food, desenvolvida como parte do curso de Arquitetura de Software
-da FIAP (Tech Challenge).
+<div align="center">
+
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=FIAP-SOAT-TECH-TEAM_foodcore-auth&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=FIAP-SOAT-TECH-TEAM_foodcore-auth)
+[![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=FIAP-SOAT-TECH-TEAM_foodcore-auth&metric=code_smells)](https://sonarcloud.io/summary/new_code?id=FIAP-SOAT-TECH-TEAM_foodcore-auth)
+[![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=FIAP-SOAT-TECH-TEAM_foodcore-auth&metric=ncloc)](https://sonarcloud.io/summary/new_code?id=FIAP-SOAT-TECH-TEAM_foodcore-auth)
+[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=FIAP-SOAT-TECH-TEAM_foodcore-auth&metric=sqale_rating)](https://sonarcloud.io/summary/new_code?id=FIAP-SOAT-TECH-TEAM_foodcore-auth)
+
+</div>
+
+Azure Function serverless responsável pela autenticação e autorização de usuários do sistema FoodCore. Integrada com AWS Cognito para gerenciamento de identidade. Desenvolvida como parte do curso de Arquitetura de Software da FIAP (Tech Challenge).
 
 <div align="center">
   <a href="#visao-geral">Visão Geral</a> •
+  <a href="#arquitetura">Arquitetura</a> •
   <a href="#tecnologias">Tecnologias</a> •
-  <a href="#executando-os-testes">Testes</a> •
-  <a href="#autenticacao-de-clientes">Autenticação de clientes</a> •
-  <a href="#autenticacao-de-administradores">Autenticação de administradores</a> •
-  <a href="#cicd-infra">Governança e Fluxo de Deploy</a>
+  <a href="#fluxo-clientes">Autenticação de Clientes</a> •
+  <a href="#fluxo-admin">Autenticação de Administradores</a> •
+  <a href="#executando-testes">Executando os Testes</a> •
+  <a href="#deploy">Governança e Fluxo de Deploy</a> •
+  <a href="#contribuicao">Contribuição</a>
 </div><br>
 
-> 📽️ Vídeo de demonstração da arquitetura: [https://www.youtube.com/watch?v=soaATSbSRPc](https://www.youtube.com/watch?v=XgUpOKJjqak)<br>
+> 📽️ Vídeo de demonstração da arquitetura: [https://www.youtube.com/watch?v=XgUpOKJjqak](https://www.youtube.com/watch?v=XgUpOKJjqak)<br>
 
-# 🔑 Lambda de Autenticação - Identificação via CPF (C# + Cognito)
+---
 
-## 📖 Visão Geral
+<h2 id="visao-geral">📋 Visão Geral</h2>
 
-A Lambda é responsável pela **identificação de clientes** no sistema de autoatendimento.
-Ela recebe o **CPF** do cliente, consulta o **Cognito**, gera um **JWT** e retorna o token para o **API Gateway (APIM)**, que repassa a chamada para a **FoodCore API**.
+O **FoodCore Auth** é uma Azure Function que implementa o padrão **Lambda Authorizer**, responsável pela identificação e autorização de usuários no sistema de autoatendimento.
 
-## 🚀 Tecnologias
+### Fluxo Principal
 
-- **C# .NET 9 AWS Lambda Runtime**
-- **Azure APIM** (API Gateway)
-- **AWS Cognito** (identificação/autenticação sem senha, apenas CPF ou Email)
-- **JWT** para comunicação segura
-- **GitHub Actions + Terraform** para deploy
-- **xUnit + FluentAssertions** para testes unitários
-- **SonarCloud** para análise de qualidade de código
+1. Recebe **CPF** ou **Email** do cliente
+2. Consulta o **AWS Cognito**
+3. Gera e valida **JWT**
+4. Retorna dados do usuário para o **APIM**
+5. APIM repassa a requisição autenticada para os microsserviços
 
-## 🧪 Executando os Testes
+### Características
 
-### Comandos
+- **Serverless**: Executa sob demanda, sem servidor dedicado
+- **Always On**: Configurado para minimizar cold start
+- **Implicit Deny**: Qualquer falha de autenticação resulta em bloqueio
+- **Caching**: Tokens cacheados no APIM para performance
 
-```bash
-# Navegar para a pasta da solution
-cd function
+---
 
-# Restaurar dependências
-dotnet restore TC4.sln
+<h2 id="arquitetura">🧱 Arquitetura</h2>
 
-# Executar todos os testes
-dotnet test TC4.sln
+<details>
+<summary>Expandir para mais detalhes</summary>
 
-# Executar testes com cobertura de código
-dotnet test TC4.sln --collect:"XPlat Code Coverage"
+### 🎯 Padrão Lambda Authorizer
 
-# Executar testes com output detalhado
-dotnet test TC4.sln --logger "console;verbosity=detailed"
+```
+Cliente → APIM → Azure Function → Cognito
+                      ↓
+              Validação JWT (JWKS)
+                      ↓
+              Retorna claims
+                      ↓
+           APIM → Microsserviço
 ```
 
-## 🔄 Autenticação de clientes
+### 🔐 Validações Realizadas
 
-1. O usuário informa **CPF ou EMAIL** no frontend.
-2. A requisição chega no **APIM**, que redireciona para a **Azure Function (Lambda em C#)**.
-3. O Cognito gera um **JWT**.
-4. A **Azure Function** valida:
-   - Assinatura do token via **JWKS público da AWS**
-   - Se o usuário tem permissão de acessar o path solicitado (com base na Role)
-   - O mecanismo é **implicit deny** (qualquer falha = acesso negado).
-   - Se o token for válido, a Function retorna um body semelhante a esse:
+- **Assinatura do token** via JWKS público da AWS
+- **Permissão de acesso** ao path solicitado (baseada em Role)
+- **Expiração do token**
+- **Claims obrigatórias** (CPF, email, role)
 
-    ```json
-    {
-      "subject": "a1b2c3d4-e5f6-7890-abcd-1234567890ef",
-      "name": "João da Silva",
-      "email": "joao.silva@example.com",
-      "cpf": "12345678900",
-      "role": "ADMIN",
-      "createdAt": "2025-10-02T09:30:00Z"
-    }
-    ```
+### 📦 Estrutura do Projeto
 
-5. O **APIM** repassa a requisição com o **JWT** e todos os atributos retornados pela lambda em headers HTTP para a **FoodCore API**.
+```
+function/
+├── FoodcoreAuth/
+│   ├── FoodcoreAuth.cs      # Endpoints da Function
+│   ├── Program.cs           # Entry point
+│   ├── Config/              # Configurações
+│   ├── DTO/                 # Data Transfer Objects
+│   ├── Exceptions/          # Exceções de domínio
+│   ├── Helpers/             # Validação e autorização
+│   ├── Mapper/              # Mapeamentos
+│   ├── Model/               # Modelos de domínio
+│   ├── Presenter/           # Formatação de respostas
+│   ├── Services/            # Integração com Cognito
+│   └── Utils/               # Utilitários
+└── FoodcoreAuth.Tests/      # Testes unitários
+```
 
-### Exemplo de Fluxo (cliente)
+### 🏗️ Microsserviços do Ecossistema
+
+| Microsserviço | Responsabilidade | Repositório |
+|---------------|------------------|-------------|
+| **foodcore-auth** | Autenticação (este repositório) | [foodcore-auth](https://github.com/FIAP-SOAT-TECH-TEAM/foodcore-auth) |
+| **foodcore-order** | Gerenciamento de pedidos | [foodcore-order](https://github.com/FIAP-SOAT-TECH-TEAM/foodcore-order) |
+| **foodcore-payment** | Processamento de pagamentos | [foodcore-payment](https://github.com/FIAP-SOAT-TECH-TEAM/foodcore-payment) |
+| **foodcore-catalog** | Catálogo de produtos | [foodcore-catalog](https://github.com/FIAP-SOAT-TECH-TEAM/foodcore-catalog) |
+
+</details>
+
+---
+
+<h2 id="tecnologias">🔧 Tecnologias</h2>
+
+| Categoria | Tecnologia |
+|-----------|------------|
+| **Runtime** | .NET 9 |
+| **Cloud** | Azure Functions |
+| **Identity** | AWS Cognito |
+| **Gateway** | Azure APIM |
+| **Testes** | xUnit, FluentAssertions |
+| **Qualidade** | SonarCloud |
+| **IaC** | Terraform |
+| **CI/CD** | GitHub Actions |
+
+---
+
+<h2 id="fluxo-clientes">🔄 Autenticação de Clientes</h2>
+
+<details>
+<summary>Expandir para mais detalhes</summary>
+
+Clientes autenticam via **CPF** ou **Email** através da Azure Function.
+
+### Fluxo
 
 ```mermaid
 sequenceDiagram
@@ -95,30 +144,34 @@ sequenceDiagram
     API-->>User: Retorna dados do pedido
 ```
 
-## 🧑‍💼 Autenticação de Administradores
+### Resposta da Function
 
-Diferente dos clientes, administradores não autenticam via Lambda.
-Eles utilizam diretamente a Hosted UI do AWS Cognito, onde realizam login com usuário e senha.
+```json
+{
+  "subject": "a1b2c3d4-e5f6-7890-abcd-1234567890ef",
+  "name": "João da Silva",
+  "email": "joao.silva@example.com",
+  "cpf": "12345678900",
+  "role": "ADMIN",
+  "createdAt": "2025-10-02T09:30:00Z"
+}
+```
 
-Os links da Hosted UI são expostos como outputs do Terraform e podem ser consultados no pipeline de CD (GitHub Actions) após o deploy.
+</details>
 
-### 🔗 Recuperando os links de autenticação
+---
 
-Nos outputs do Terraform, dois links são disponibilizados:
+<h2 id="fluxo-admin">🧑‍💼 Autenticação de Administradores</h2>
 
-- **Hosted UI (Implicit Flow)**
- Realiza login e retorna o **JWT diretamente na URL** após a autenticação.
+<details>
+<summary>Expandir para mais detalhes</summary>
 
-- **Hosted UI (Authorization Code Flow)**
-Retorna um **código de autorização**, que deve ser trocado por um **JWT** via requisição de back-end.
+Administradores autenticam diretamente via **Hosted UI do Cognito** com usuário e senha.
 
-### 🧭 Fluxos de Autenticação Cognito
+### Fluxos Disponíveis
 
-🔸 Implicit Flow
-
-Fluxo mais simples, retorna o token diretamente após o login.
-
-Exemplo:
+#### Implicit Flow
+Retorna JWT diretamente na URL após login.
 
 ```mermaid
 sequenceDiagram
@@ -127,104 +180,100 @@ sequenceDiagram
     participant APIM
     participant API
 
-    Admin->>Cognito: Acessa Hosted UI (implicit URL)
-    Cognito-->>Admin: Retorna JWT na URL (fragment)
-    Admin->>APIM: Chamada autenticada com JWT
+    Admin->>Cognito: Acessa Hosted UI
+    Cognito-->>Admin: Retorna JWT na URL
+    Admin->>APIM: Chamada com JWT
     APIM->>API: Repassa token válido
-    API-->>Admin: Retorna dados administrativos
+    API-->>Admin: Retorna dados
 ```
 
-Exemplo de URL (output Terraform):
+#### Authorization Code Flow
+Retorna código que deve ser trocado por JWT via backend (mais seguro).
 
-```bash
-https://foodcore-auth-domain.auth.us-east-1.amazoncognito.com/login?
-client_id=xxxxxxx&
-response_type=token&
-scope=email+openid+profile&
-redirect_uri=https://foodcore.admin.app/login/callback
-```
+### Links da Hosted UI
 
-🔸 Authorization Code Flow
+Os links são expostos como outputs do Terraform após o deploy:
+- **Implicit Flow URL**: Login com retorno direto do token
+- **Authorization Code Flow URL**: Login com código de autorização
 
-Fluxo mais seguro — retorna um código que o back-end troca por um JWT.
-Esse método evita exposição do token diretamente na URL.
-
-Exemplo:
-
-```mermaid
-sequenceDiagram
-    participant Admin
-    participant Cognito
-    participant Backend
-    participant APIM
-    participant API
-
-    Admin->>Cognito: Acessa Hosted UI (code URL)
-    Cognito-->>Admin: Redireciona com Authorization Code
-    Admin->>Backend: Envia code recebido
-    Backend->>Cognito: Troca code por JWT
-    Cognito-->>Backend: Retorna JWT
-    Backend->>APIM: Chamada autenticada com JWT
-    APIM->>API: Repassa token válido
-    API-->>Backend: Retorna dados administrativos
-```
-
-Exemplo de URL (output Terraform):
-
-```bash
-https://foodcore-auth-domain.auth.us-east-1.amazoncognito.com/login?
-client_id=xxxxxxx&
-response_type=code&
-scope=email+openid+profile&
-redirect_uri=https://foodcore.admin.app/login/callback
-```
-
-✅ Resumo
-
-| Tipo de Usuário   | Método de Login                           | Origem do JWT        | Meio de Validação                             |
-| ----------------- | ----------------------------------------- | -------------------- | --------------------------------------------- |
-| **Cliente**       | CPF/Email via Azure Function              | Cognito (via Lambda) | Azure Function valida assinatura e permissões |
-| **Administrador** | Hosted UI Cognito (Implicit ou Code Flow) | Cognito Hosted UI    | APIM valida token via JWKS público da AWS     |
-
-<h3 id="cicd-infra">🔐 Governança e Fluxo de Deploy de Infraestrutura</h3>
-
-A gestão da infraestrutura segue um processo **automatizado, auditável e controlado** via **Pull Requests** no repositório de provisionamento.
-Esse fluxo garante segurança, rastreabilidade e aprovação formal antes de qualquer mudança aplicada em produção.
+</details>
 
 ---
 
-### ⚙️ Processo de Alterações
+<h2 id="executando-testes">🧪 Executando os Testes</h2>
 
-1. **Criação de Pull Request**
-   - Todas as alterações de infraestrutura (novos recursos, updates, ou ajustes de configuração) devem ser propostas via **Pull Request (PR)**.
-   - O PR contém os arquivos `.tf` modificados e uma descrição detalhando o impacto da mudança.
+```bash
+# Navegar para a pasta da solution
+cd function
 
-2. **Execução Automática do Terraform Plan**
-   - Ao abrir o PR, o pipeline de CI executa automaticamente o comando:
+# Restaurar dependências
+dotnet restore TC4.sln
 
-     ```
-     terraform plan
-     ```
+# Executar todos os testes
+dotnet test TC4.sln
 
-   - Esse passo gera uma **prévia das alterações** que seriam aplicadas (criações, destruições, atualizações).
-   - O resultado do `plan` é exibido diretamente nos logs do pipeline, permitindo revisão técnica pelos aprovadores.
+# Executar com cobertura de código
+dotnet test TC4.sln --collect:"XPlat Code Coverage"
 
-3. **Revisão e Aprovação**
-   - O repositório é **protegido**, exigindo no mínimo **1 aprovação** de um codeowner antes do merge.
-   - Nenhum usuário pode aplicar alterações diretamente na branch principal (`main` ou `master`).
-   - Revisores devem garantir:
-     - Que o `plan` não tenha destruições indevidas (`destroy`)
-     - Que as variáveis e roles estejam corretas
-     - Que os módulos sigam o padrão organizacional
-   - Todos os checks(ex: jobs do github actions, sonarQube, etc..) estipulados nas regras de proteção devem estar passando.
-
-4. **Aplicação no Merge**
-   - Após aprovação e merge do PR, o pipeline executa automaticamente:
-
-     ```
-     terraform apply -auto-approve
-     ```
-
-   - O **Terraform Apply** aplica as alterações descritas no `plan` aprovado, provisionando ou atualizando os recursos no Azure.
+# Executar com output detalhado
+dotnet test TC4.sln --logger "console;verbosity=detailed"
+```
 
 ---
+
+<h2 id="deploy">⚙️ Fluxo de Deploy</h2>
+
+<details>
+<summary>Expandir para mais detalhes</summary>
+
+### Pipeline CI/CD
+
+1. **Pull Request**
+   - Executa build e testes
+   - Análise SonarCloud
+   - Terraform Plan
+
+2. **Merge para Main**
+   - Terraform Apply
+   - Deploy da Azure Function
+   - Importação no APIM
+
+### Recursos Provisionados
+
+| Recurso | Descrição |
+|---------|-----------|
+| **Azure Function** | Função serverless de autenticação |
+| **APIM Policy** | Política de autorização no API Gateway |
+| **Cognito User Pool** | Pool de usuários no AWS |
+| **Key Vault Secrets** | Credenciais do Cognito |
+
+</details>
+
+---
+
+<h2 id="contribuicao">🤝 Contribuição</h2>
+
+### Desenvolvimento Local
+
+```bash
+# Clonar repositório
+git clone https://github.com/FIAP-SOAT-TECH-TEAM/foodcore-auth.git
+cd foodcore-auth/function
+
+# Configurar variáveis de ambiente
+cp FoodcoreAuth/env-example FoodcoreAuth/.env
+
+# Executar localmente
+func start
+```
+
+### Licença
+
+Este projeto está licenciado sob a [MIT License](LICENSE).
+
+---
+
+<div align="center">
+  <strong>FIAP - Pós-graduação em Arquitetura de Software</strong><br>
+  Tech Challenge
+</div>
