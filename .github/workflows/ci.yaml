@@ -139,7 +139,7 @@ jobs:
 
       - name: Publish Function
         working-directory: ./function
-        run: dotnet publish FoodcoreAuth/FoodcoreAuth.csproj --configuration Release --output ./publish
+        run: dotnet publish FoodcoreAuth/function.csproj --configuration Release --output ./publish
 
       - name: Zip package
         working-directory: ./function
