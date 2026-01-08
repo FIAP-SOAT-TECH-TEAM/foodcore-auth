@@ -1,7 +1,7 @@
 # � FoodCore Auth
 
 <div align="center">
-  
+
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=FIAP-SOAT-TECH-TEAM_foodcore-auth&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=FIAP-SOAT-TECH-TEAM_foodcore-auth)
 [![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=FIAP-SOAT-TECH-TEAM_foodcore-auth&metric=code_smells)](https://sonarcloud.io/summary/new_code?id=FIAP-SOAT-TECH-TEAM_foodcore-auth)
 [![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=FIAP-SOAT-TECH-TEAM_foodcore-auth&metric=ncloc)](https://sonarcloud.io/summary/new_code?id=FIAP-SOAT-TECH-TEAM_foodcore-auth)
@@ -39,6 +39,7 @@ Azure Function serverless responsável pela autenticação e autorização de us
 > Durante o deploy dos microsserviços, Pods podem ficar com status **Pending** e o seguinte erro pode aparecer:
 >
 > <img src=".github/images/error.jpeg" alt="Error" />
+> <img src=".github/images/erroDeploy.jpeg" alt="Error" />
 >
 > **Causa**: O cluster atingiu o limite máximo de VMs permitido pela quota e não há recursos computacionais (CPU/memória) disponíveis nos nós existentes.
 >
@@ -189,6 +190,7 @@ Administradores autenticam diretamente via **Hosted UI do Cognito** com usuário
 ### Fluxos Disponíveis
 
 #### Implicit Flow
+
 Retorna JWT diretamente na URL após login.
 
 ```mermaid
@@ -206,11 +208,13 @@ sequenceDiagram
 ```
 
 #### Authorization Code Flow
+
 Retorna código que deve ser trocado por JWT via backend (mais seguro).
 
 ### Links da Hosted UI
 
 Os links são expostos como outputs do Terraform após o deploy:
+
 - **Implicit Flow URL**: Login com retorno direto do token
 - **Authorization Code Flow URL**: Login com código de autorização
 
