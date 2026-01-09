@@ -26,25 +26,6 @@ Azure Function serverless responsável pela autenticação e autorização de us
 
 ---
 
-<h2 id="limitacoes-quota">Limitações de Quota (Azure for Students)</h2>
-
-> A assinatura **Azure for Students** impõe as seguintes restrições:
->
-> - **Região**: Brazil South não está disponível. Utilizamos **South Central US** como alternativa
->
-> - **Quota de VMs**: Apenas **2 instâncias** do SKU utilizado para o node pool do AKS, tendo um impacto direto na escalabilidade do cluster. Quando o limite é atingido, novos nós não podem ser criados e dão erro no provisionamento de workloads.
->
-> ### Erro no CD dos Microsserviços
->
-> Durante o deploy dos microsserviços, Pods podem ficar com status **Pending** e o seguinte erro pode aparecer:
->
-> <img src=".github/images/error.jpeg" alt="Error" />
-> <img src=".github/images/erroDeploy.jpeg" alt="Error" />
->
-> **Causa**: O cluster atingiu o limite máximo de VMs permitido pela quota e não há recursos computacionais (CPU/memória) disponíveis nos nós existentes.
->
-> **Solução**: Aguardar a liberação de recursos de outros pods e reexecutar CI + CD.
-
 <h2 id="visao-geral">📋 Visão Geral</h2>
 
 O **FoodCore Auth** é uma Azure Function que implementa o padrão **Lambda Authorizer**, responsável pela identificação e autorização de usuários no sistema de autoatendimento.
@@ -53,7 +34,7 @@ O **FoodCore Auth** é uma Azure Function que implementa o padrão **Lambda Auth
 
 1. Recebe **CPF** ou **Email** do cliente
 2. Consulta o **AWS Cognito**
-3. Gera e valida **JWT**
+3. Valida e interpreta **JWT (OAuth2 / OIDC)**
 4. Retorna dados do usuário para o **APIM**
 5. APIM repassa a requisição autenticada para os microsserviços
 
@@ -61,6 +42,7 @@ O **FoodCore Auth** é uma Azure Function que implementa o padrão **Lambda Auth
 
 - **Serverless**: Executa sob demanda, sem servidor dedicado
 - **Always On**: Configurado para minimizar cold start
+- **OAuth 2.0 + OIDC**: Autorização padronizada e identidade federada
 - **Implicit Deny**: Qualquer falha de autenticação resulta em bloqueio
 - **Caching**: Tokens cacheados no APIM para performance
 
@@ -70,6 +52,15 @@ O **FoodCore Auth** é uma Azure Function que implementa o padrão **Lambda Auth
 
 <details>
 <summary>Expandir para mais detalhes</summary>
+
+### 🎯 OAuth 2.0 + OpenID Connect (OIDC)
+
+O sistema utiliza:
+
+- **OAuth 2.0** para **autorização** baseada em tokens
+- **OpenID Connect (OIDC)** para **identidade**, fornecendo claims padronizadas do usuário
+
+O **AWS Cognito** atua como **Identity Provider (IdP)**, emitindo **JWTs compatíveis com OIDC**, enquanto a Azure Function valida e aplica regras de autorização.
 
 ### 🎯 Padrão Lambda Authorizer
 
@@ -83,10 +74,22 @@ Cliente → APIM → Azure Function → Cognito
            APIM → Microsserviço
 ```
 
+### 🔑 Tokens e Claims
+
+- **Access Token (JWT)**: Utilizado para autorização
+- **ID Token (OIDC)**: Contém identidade do usuário
+- **Claims validadas**:
+  - `sub` (subject)
+  - `email`
+  - `cpf`
+  - `role`
+  - `exp` (expiração)
+
 ### 🔐 Validações Realizadas
 
 - **Assinatura do token** via JWKS público da AWS
-- **Permissão de acesso** ao path solicitado (baseada em Role)
+- **Conformidade com **OAuth 2.0 / OIDC**
+- **Permissão de acesso** ao path solicitado baseada em Role (RBAC)
 - **Expiração do token**
 - **Claims obrigatórias** (CPF, email, role)
 
