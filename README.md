@@ -1,4 +1,4 @@
-# � FoodCore Auth
+# 🔒 FoodCore Auth
 
 <div align="center">
 
@@ -251,32 +251,41 @@ dotnet test TC4.sln --logger "console;verbosity=detailed"
 <details>
 <summary>Expandir para mais detalhes</summary>
 
-### Pipeline CI/CD
+### Pipeline
 
 1. **Pull Request**
-   - Executa build e testes
-   - Análise SonarCloud
-   - Terraform Plan
+   - Preencher template de pull request adequadamente
 
-2. **Merge para Main**
-   - Terraform Apply
-   - Deploy da Azure Function
-   - Importação no APIM
+2. **Revisão e Aprovação**
+   - Mínimo 1 aprovação de CODEOWNER
 
-### Recursos Provisionados
+3. **Merge para Main**
 
-| Recurso | Descrição |
-|---------|-----------|
-| **Azure Function** | Função serverless de autenticação |
-| **APIM Policy** | Política de autorização no API Gateway |
-| **Cognito User Pool** | Pool de usuários no AWS |
-| **Key Vault Secrets** | Credenciais do Cognito |
+### Proteções
+
+- Branch `main` protegida
+- Nenhum push direto permitido
+- Todos os checks devem passar
+
+### Ordem de Provisionamento
+
+```
+1. foodcore-infra        (AKS, VNET)
+2. foodcore-db           (Bancos de dados)
+3. foodcore-auth           (Azure Function Authorizer)
+4. foodcore-observability (Serviços de Observabilidade)
+5. foodcore-order            (Microsserviço de pedido)
+6. foodcore-payment            (Microsserviço de pagamento)
+7. foodcore-catalog            (Microsserviço de catálogo)
+```
+
+> ⚠️ Opcionalmente, as pipelines do repositório `foodcore-shared` podem ser executadas para publicação de um novo package. Atualizar os microsserviços para utilazarem a nova versão do pacote.
 
 </details>
 
 ---
 
-<h2 id="contribuicao">🤝 Contribuição</h2>
+<h2 id="instalacao">🚀 Instalação e Uso</h2>
 
 ### Desenvolvimento Local
 
@@ -292,6 +301,18 @@ cp FoodcoreAuth/env-example FoodcoreAuth/.env
 func start
 ```
 
+---
+
+<h2 id="contribuicao">🤝 Contribuição</h2>
+
+### Fluxo de Contribuição
+
+1. Crie uma branch a partir de `main`
+2. Implemente suas alterações
+3. Execute os testes: `dotnet test TC4.sln`
+4. Abra um Pull Request
+5. Aguarde aprovação de um CODEOWNER
+
 ### Licença
 
 Este projeto está licenciado sob a [MIT License](LICENSE).
@@ -300,5 +321,5 @@ Este projeto está licenciado sob a [MIT License](LICENSE).
 
 <div align="center">
   <strong>FIAP - Pós-graduação em Arquitetura de Software</strong><br>
-  Tech Challenge
+  Tech Challenge 4
 </div>
