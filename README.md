@@ -18,7 +18,8 @@ Azure Function serverless responsável pela autenticação e autorização de us
   <a href="#fluxo-clientes">Autenticação de Clientes</a> •
   <a href="#fluxo-admin">Autenticação de Administradores</a> •
   <a href="#executando-testes">Executando os Testes</a> •
-  <a href="#deploy">Governança e Fluxo de Deploy</a> •
+  <a href="#deploy">Fluxo de Deploy</a> •
+  <a href="#instalacao-e-uso">Instalação e Uso</a> •
   <a href="#contribuicao">Contribuição</a>
 </div><br>
 
@@ -285,7 +286,7 @@ dotnet test TC4.sln --logger "console;verbosity=detailed"
 
 ---
 
-<h2 id="instalacao">🚀 Instalação e Uso</h2>
+<h2 id="instalacao-e-uso">🚀 Instalação e Uso</h2>
 
 ### Desenvolvimento Local
 
