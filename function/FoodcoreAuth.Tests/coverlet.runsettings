@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RunSettings>
+  <DataCollectionRunSettings>
+    <DataCollectors>
+      <DataCollector friendlyName="XPlat Code Coverage">
+        <Configuration>
+          <Format>cobertura</Format>
+          <ExcludeByFile>**/obj/**/*.cs,**/GeneratedFunctionExecutor.g.cs,**/GeneratedFunctionMetadataProvider.g.cs,**/WorkerExtensionStartupCodeExecutor.g.cs</ExcludeByFile>
+          <ExcludeByAttribute>Obsolete,GeneratedCodeAttribute,CompilerGeneratedAttribute,ExcludeFromCodeCoverageAttribute</ExcludeByAttribute>
+          <Exclude>[*]function.DirectFunctionExecutor,[*]function.FunctionExecutorAutoStartup,[*]function.FunctionExecutorHostBuilderExtensions,[*]function.FunctionMetadataProviderAutoStartup,[*]function.GeneratedFunctionMetadataProvider,[*]function.WorkerExtensionStartupCodeExecutor,[*]function.WorkerHostBuilderFunctionMetadataProviderExtension,[*]Program</Exclude>
+        </Configuration>
+      </DataCollector>
+    </DataCollectors>
+  </DataCollectionRunSettings>
+</RunSettings>
