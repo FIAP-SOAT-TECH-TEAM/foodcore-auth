@@ -282,7 +282,7 @@ dotnet test TC4.sln --logger "console;verbosity=detailed"
 7. foodcore-catalog            (Microsserviço de catálogo)
 ```
 
-> ⚠️ Opcionalmente, as pipelines do repositório `foodcore-shared` podem ser executadas para publicação de um novo package. Atualizar os microsserviços para utilazarem a nova versão do pacote.
+> ⚠️ Opcionalmente, as pipelines do repositório `foodcore-shared` podem ser executadas para publicação de um novo package. Atualizar os microsserviços para utilizarem a nova versão do pacote.
 
 </details>
 
