@@ -91,7 +91,7 @@ Cliente → APIM → Azure Function → Cognito
 ### 🔐 Validações Realizadas
 
 - **Assinatura do token** via JWKS público da AWS
-- **Conformidade com **OAuth 2.0 / OIDC**
+- **Conformidade** com **OAuth 2.0 / OIDC**
 - **Permissão de acesso** ao path solicitado baseada em Role (RBAC)
 - **Expiração do token**
 - **Claims obrigatórias** (CPF, email, role)
